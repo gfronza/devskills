@@ -1,0 +1,46 @@
+{
+  "name": "devskills",
+  "version": "0.1.0",
+  "description": "Installable AI skill package for Claude Code, OpenCode, Cursor, and VSCode. Tiger Style, GSD workflow, RTK, Caveman, tldt.",
+  "keywords": [
+    "claude-code",
+    "cursor",
+    "opencode",
+    "ai-coding",
+    "tiger-style",
+    "developer-tools",
+    "workflow",
+    "go",
+    "typescript",
+    "rust"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gleicon/devskills.git"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "devskills": "./bin/devskills.js"
+  },
+  "scripts": {
+    "install-skills": "bash install.sh",
+    "setup": "bash scripts/setup.sh",
+    "update": "bash scripts/update.sh"
+  },
+  "files": [
+    "bin/",
+    "claude/",
+    "opencode/",
+    "cursor/",
+    "vscode/",
+    "prompts/",
+    "scripts/",
+    "docs/",
+    "install.sh",
+    "README.md",
+    "PUBLISHING.md"
+  ]
+}

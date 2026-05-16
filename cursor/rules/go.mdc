@@ -1,0 +1,48 @@
+---
+description: Go backend conventions — idioms, error handling, concurrency, testing.
+globs: ["**/*.go"]
+alwaysApply: false
+---
+
+# Go Conventions
+
+Target: Go 1.22+. Backend services, CLIs, APIs.
+
+## Errors
+
+- Wrap: `fmt.Errorf("op: %w", err)`. Never discard errors.
+- Sentinel: `var ErrFoo = errors.New("foo")`. Check with `errors.Is`.
+- No panic in library code.
+
+## Concurrency
+
+- Context first parameter: `func F(ctx context.Context, ...)`.
+- Every goroutine has explicit exit condition (context cancel, channel close, WaitGroup).
+- Use `errgroup` for parallel work with error collection.
+- Mutex embedded as first field in owning struct.
+
+## HTTP
+
+- Client and server always have explicit timeouts set.
+- Validate all inputs at handler entry.
+
+## Testing
+
+- Table-driven tests: `[]struct{ name, input, want }`.
+- Subtests with `t.Run`. Parallel with `t.Parallel()` where safe.
+- No real network in unit tests — use interfaces and fakes.
+
+## Naming
+
+- Receivers: short, consistent, not `self`/`this`.
+- Context variable: always `ctx`.
+- Interfaces at point of use (consumer package).
+- Avoid `util/`, `common/`, `helpers/` package names.
+
+## Project Layout
+
+```
+cmd/<name>/main.go
+internal/
+pkg/        (only if library)
+```

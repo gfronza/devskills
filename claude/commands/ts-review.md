@@ -1,0 +1,60 @@
+Review TypeScript code with Tiger Style constraints and TypeScript/Workers idioms.
+
+Applies to: TypeScript 5+. Cloudflare Workers, Next.js, React, edge runtimes.
+
+## Review Checklist
+
+Report only violations — no praise, no summary.
+
+### Tiger Style (mandatory)
+- [ ] No unbounded loops over user-controlled data
+- [ ] All promises awaited or explicitly handled — no floating promises
+- [ ] Error values propagated explicitly — no silent catch-and-ignore
+- [ ] Functions under 70 lines
+- [ ] Variable names include units/qualifiers where applicable (`_ms`, `_bytes`, `_count`)
+
+### TypeScript
+- [ ] `strict: true` in tsconfig — no `any` unless explicitly justified with comment
+- [ ] No `as Type` casts that bypass runtime checks — validate at boundaries
+- [ ] Discriminated unions used for state modeling, not boolean flags
+- [ ] No optional chaining (`?.`) used to hide missing error handling
+- [ ] Enums prefer `const enum` or union of string literals over numeric enums
+- [ ] Return types explicit on all exported functions
+- [ ] No `namespace` — use ES modules
+
+### Cloudflare Workers (when applicable)
+- [ ] No Node.js-only APIs (`fs`, `path`, `crypto` with Node semantics) — use Web APIs
+- [ ] `env` bindings typed via `Env` interface, not `any`
+- [ ] Durable Objects: state mutations wrapped in `this.state.storage.transaction()`
+- [ ] CPU time budget respected — no long synchronous computation in request handler
+- [ ] Secrets accessed via `env.SECRET_NAME`, not hardcoded
+- [ ] `wrangler.toml` bindings match runtime `Env` interface
+
+### React / Frontend (when applicable)
+- [ ] No state mutation — `setState` or dispatch with new object
+- [ ] `useEffect` dependencies array complete — no stale closure bugs
+- [ ] No inline object/function creation in JSX props that cause unnecessary re-renders
+- [ ] Data fetching co-located with loading/error state
+- [ ] Unsafe HTML rendering avoided; content sanitized before DOM insertion
+- [ ] Keys on lists are stable identifiers, not array indices
+
+### Security
+- [ ] No dynamic code execution from untrusted strings
+- [ ] Raw HTML insertion avoided unless content is sanitized through a trusted library
+- [ ] CORS headers explicitly configured, not wildcard `*` on sensitive routes
+- [ ] Auth tokens not stored in localStorage (prefer httpOnly cookies or memory)
+- [ ] No secrets in client-side bundles
+- [ ] All user input validated and bounded at the entry point
+
+### Testing
+- [ ] Unit tests for pure functions
+- [ ] Integration tests for Worker routes (use Miniflare or `wrangler dev`)
+- [ ] No `any` type in test assertions
+
+## Output Format
+
+```
+<file>:<line>: <severity>: <problem>. <fix>.
+```
+
+Severity: `critical`, `major`, `minor`.

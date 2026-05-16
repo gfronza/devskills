@@ -1,0 +1,4 @@
+node_modules/
+.devskills/
+*.log
+.DS_Store

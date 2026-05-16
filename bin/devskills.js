@@ -1,0 +1,99 @@
+#!/usr/bin/env node
+"use strict"
+
+const { execSync, spawnSync } = require("child_process")
+const path = require("path")
+const fs = require("fs")
+
+const DEVSKILLS_DIR = path.join(__dirname, "..")
+const INSTALL_SCRIPT = path.join(DEVSKILLS_DIR, "install.sh")
+const SETUP_SCRIPT = path.join(DEVSKILLS_DIR, "scripts", "setup.sh")
+const UPDATE_SCRIPT = path.join(DEVSKILLS_DIR, "scripts", "update.sh")
+
+const args = process.argv.slice(2)
+const cmd = args[0]
+const rest = args.slice(1)
+
+function run(script, extraArgs) {
+  const result = spawnSync("bash", [script, ...extraArgs], {
+    stdio: "inherit",
+    cwd: process.cwd()
+  })
+  if (result.status !== 0) process.exit(result.status ?? 1)
+}
+
+function help() {
+  console.log(`
+devskills — AI skill package for Claude Code, OpenCode, Cursor, VSCode
+
+Commands:
+  install              Install skills to all detected environments
+  setup --lang=<lang>  Configure current project with a language profile
+  update               Pull latest and reinstall skills
+  list                 List available skills and language profiles
+
+Language profiles: go, typescript, javascript, rust
+
+Options (pass through to install/setup):
+  --skip-external      Skip external tool installation (GSD, RTK, Caveman, tldt)
+  --cursor             Install Cursor rules into current project
+  --vscode             Install VSCode Copilot instructions
+  --dry-run            Show what would happen without writing files
+
+Examples:
+  npx devskills install
+  npx devskills setup --lang=go --cursor
+  npx devskills install --lang=typescript --skip-external
+`)
+}
+
+function list() {
+  const claudeDir = path.join(DEVSKILLS_DIR, "claude", "commands")
+  const langDir = path.join(DEVSKILLS_DIR, "prompts", "language")
+
+  console.log("\nSkills (Claude Code / OpenCode commands):")
+  for (const f of fs.readdirSync(claudeDir).sort()) {
+    if (f.endsWith(".md")) {
+      console.log(`  /${f.replace(".md", "")}`)
+    }
+  }
+
+  console.log("\nLanguage profiles:")
+  for (const f of fs.readdirSync(langDir).sort()) {
+    if (f.endsWith(".md")) {
+      console.log(`  ${f.replace(".md", "")}`)
+    }
+  }
+
+  console.log("\nCursor rules:")
+  const cursorDir = path.join(DEVSKILLS_DIR, "cursor", "rules")
+  for (const f of fs.readdirSync(cursorDir).sort()) {
+    console.log(`  ${f}`)
+  }
+  console.log()
+}
+
+switch (cmd) {
+  case "install":
+    run(INSTALL_SCRIPT, rest)
+    break
+  case "setup":
+    run(SETUP_SCRIPT, rest)
+    break
+  case "update":
+    run(UPDATE_SCRIPT, rest)
+    break
+  case "list":
+    list()
+    break
+  case "help":
+  case "--help":
+  case "-h":
+  case undefined:
+    help()
+    break
+  default:
+    console.error(`Unknown command: ${cmd}`)
+    help()
+    process.exit(1)
+}

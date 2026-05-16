@@ -1,0 +1,71 @@
+Convert a description into a structured specification.
+
+When invoked, gather information and produce a spec document that defines WHAT the system does, not HOW it is implemented. The spec becomes the input to `/workflow` planning phases.
+
+## Process
+
+If the user has provided a description: proceed directly.
+If not: ask three focused questions, then produce the spec without further prompting.
+
+Questions (ask only what is missing):
+1. What is the primary user action this system enables?
+2. What does success look like — how do you know it works?
+3. What are the hard constraints: scale, latency, cost, compliance?
+
+## Spec Structure
+
+Produce a document with these sections:
+
+```
+# Specification: <name>
+
+## Problem
+One paragraph. What problem does this solve and for whom?
+
+## Scope
+What is in scope. What is explicitly out of scope.
+
+## Users
+Who uses this. What they need to accomplish. No personas — just roles and goals.
+
+## Functional Requirements
+Numbered list. Each requirement is a verifiable statement.
+FR-1: The system shall <verb> <object> when <condition>.
+
+## Non-Functional Requirements
+NFR-1: Latency: <P99 target> under <load description>
+NFR-2: Scale: <concurrent users or requests/sec>
+NFR-3: Availability: <uptime target>
+NFR-4: Data retention: <policy>
+
+## Interfaces
+- API endpoints or CLI commands (names and purpose, not full schema)
+- External systems this integrates with
+- Data formats at boundaries
+
+## Constraints
+- Language/runtime (from language profile if set)
+- Infrastructure (from project context if set)
+- Forbidden approaches
+
+## Acceptance Criteria
+Numbered list. Each item is a pass/fail test that can be run.
+AC-1: Given <state>, when <action>, then <outcome>.
+
+## Open Questions
+Questions that must be answered before implementation begins.
+```
+
+## Language Profile Integration
+
+If a language profile is active, add a "Technical Profile" section:
+- Primary language and version
+- Runtime target
+- Build toolchain
+- Testing framework
+
+## Output
+
+Write the spec to `SPEC.md` in the current directory (or `.planning/SPEC.md` if `.planning/` exists), then display it inline for review.
+
+Ask: "Should I proceed to planning with `/workflow`?" after displaying the spec.
