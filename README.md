@@ -16,9 +16,16 @@ The following are installed as separate tools. The install script handles this.
 |------|--------|---------|
 | GSD (Get Shit Done) | https://github.com/gsd-build/get-shit-done | Full dev lifecycle workflow: discuss, plan, execute, verify, ship |
 | RTK | https://github.com/rtk-ai/rtk | CLI proxy; reduces AI context token consumption 60-90% |
-| Caveman | https://github.com/juliusbrussee/caveman | Response compression; reduces output tokens ~65% |
 | tldt | https://github.com/gleicon/tldt | Extractive text summarization; no LLM, no cost |
-| Tiger Style | https://tigerstyle.dev/ | Engineering principles — safety, performance, developer experience |
+
+## References
+
+Not installed. devskills ships its own prompt commands; these are the upstream sources the prompts are based on.
+
+| Reference | Source | Used by |
+|-----------|--------|---------|
+| Caveman | https://github.com/juliusbrussee/caveman | `/caveman-lite`, `/caveman-ultra` response compression prompts |
+| Tiger Style | https://tigerstyle.dev/ | `/tiger-style` engineering principles — safety, performance, developer experience |
 
 ## Included Skills
 
@@ -95,7 +102,7 @@ git clone https://github.com/gleicon/devskills.git ~/.devskills
 ~/.devskills/install.sh
 ```
 
-That's it. Skills are copied to `~/.claude/commands/` and `~/.opencode/commands/`. External tools (GSD, RTK, Caveman, tldt) are installed automatically if their prerequisites are present.
+That's it. Skills are copied to `~/.claude/commands/` and `~/.opencode/commands/`. External tools (GSD, RTK, tldt) are installed automatically if their prerequisites are present.
 
 Skip external tools:
 
@@ -131,7 +138,7 @@ The installer writes to:
 ```
 --lang=<profile>     go | typescript | javascript | rust
 --claude-dir=<path>  Claude config dir (default: $CLAUDE_CONFIG_DIR or ~/.claude)
---skip-external      skip GSD, RTK, caveman, tldt installation
+--skip-external      skip GSD, RTK, tldt installation
 --cursor             install Cursor rules into current project
 --vscode             install VSCode Copilot instructions into current project
 --dry-run            show what would happen, write nothing

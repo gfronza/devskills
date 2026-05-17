@@ -123,25 +123,6 @@ install_rtk() {
   fi
 }
 
-install_caveman() {
-  if command -v node &>/dev/null; then
-    local node_major
-    node_major=$(node -e 'process.stdout.write(process.version.split(".")[0].slice(1))')
-    if [ "$node_major" -ge 18 ]; then
-      log "Installing Caveman (lite mode)..."
-      if [ "$DRY_RUN" -eq 0 ]; then
-        curl -fsSL https://raw.githubusercontent.com/JuliusBrussee/caveman/main/install.sh | bash 2>&1 | tail -5
-      else
-        log "DRY: would curl-install caveman"
-      fi
-    else
-      warn "Node >= 18 required for Caveman. Found: $node_major"
-    fi
-  else
-    warn "Node not found. Install Caveman manually: https://github.com/juliusbrussee/caveman"
-  fi
-}
-
 install_tldt() {
   if command -v go &>/dev/null; then
     log "Installing tldt..."
@@ -250,7 +231,6 @@ if [ "$SKIP_EXTERNAL" -eq 0 ]; then
   log "Installing external tools..."
   install_gsd
   install_rtk
-  install_caveman
   install_tldt
 else
   log "Skipping external tools (--skip-external)"

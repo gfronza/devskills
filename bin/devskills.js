@@ -35,7 +35,7 @@ Commands:
 Language profiles: go, typescript, javascript, rust
 
 Options (pass through to install/setup):
-  --skip-external      Skip external tool installation (GSD, RTK, Caveman, tldt)
+  --skip-external      Skip external tool installation (GSD, RTK, tldt)
   --claude-dir=<path>  Claude config dir (default: $CLAUDE_CONFIG_DIR or ~/.claude)
   --cursor             Install Cursor rules into current project
   --vscode             Install VSCode Copilot instructions
