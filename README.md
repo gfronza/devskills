@@ -26,7 +26,7 @@ Not installed. devskills ships its own prompt commands; these are the upstream s
 |-----------|--------|---------|
 | Caveman | https://github.com/juliusbrussee/caveman | `/caveman-lite`, `/caveman-ultra` response compression prompts |
 | Tiger Style | https://tigerstyle.dev/ | `/tiger-style` engineering principles — safety, performance, developer experience |
-| mattpocock/skills | https://github.com/mattpocock/skills | `/grill-me`, `/handoff` — adapted from the productivity skills |
+| mattpocock/skills | https://github.com/mattpocock/skills | `/grill-me`, `/handoff`, `/zoom-out`, `/tdd`, `/write-a-skill` — adapted from the productivity and engineering skills |
 
 ## Included Skills
 
@@ -42,8 +42,11 @@ Not installed. devskills ships its own prompt commands; these are the upstream s
 | Rust Review | `/rust-review` | Rust review: cargo geiger, unsafe counts, clippy, audit |
 | Frontend | `/frontend` | Frontend task mode: components, state, API integration, a11y |
 | Spec | `/spec` | Convert a description into a verifiable structured specification |
-| Grill Me | `/grill-me` | Relentless plan interview — resolve every decision branch |
+| Grill Me | `/grill-me` | Relentless plan interview — resolve every decision branch (`--record` logs to DECISIONS.md) |
 | Handoff | `/handoff` | Compact the conversation into a handoff doc for a fresh agent |
+| Zoom Out | `/zoom-out` | Step up a layer — map modules, callers, and boundaries |
+| TDD | `/tdd` | Test-first, one vertical slice at a time; behavior over implementation |
+| Write a Skill | `/write-a-skill` | Author a new devskills command in the repo conventions |
 
 ## Language Profiles
 
@@ -64,7 +67,7 @@ devskills/
 ├── PUBLISHING.md             # npm publish, GitHub releases, CI
 ├── package.json              # npm package
 ├── install.sh                # shell installer (--dry-run, --skip-external, --lang, --claude-dir)
-├── claude/commands/          # Claude Code skills (12 .md files)
+├── claude/commands/          # Claude Code skills (15 .md files)
 │   ├── tiger-style.md
 │   ├── caveman-lite.md
 │   ├── caveman-ultra.md
@@ -76,7 +79,10 @@ devskills/
 │   ├── rust-review.md
 │   ├── frontend.md
 │   ├── grill-me.md
-│   └── handoff.md
+│   ├── handoff.md
+│   ├── zoom-out.md
+│   ├── tdd.md
+│   └── write-a-skill.md
 ├── opencode/commands/        # OpenCode skills (same files)
 ├── cursor/rules/             # Cursor rules (auto-activate by file glob)
 │   ├── tiger-style.mdc       # alwaysApply: true
