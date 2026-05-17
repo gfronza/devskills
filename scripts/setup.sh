@@ -33,7 +33,7 @@ DRY_RUN=0
 for arg in "$@"; do
   case "$arg" in
     --lang=*) LANG="${arg#--lang=}" ;;
-    --claude-dir=*) ;;  # install-only; ignored here (setup touches project files, not Claude config dir)
+    --claude-dir=*|--skip-cursor|--skip-vscode|--skip-external) ;;  # install-only flags; ignored here
     --cursor) DO_CURSOR=1 ;;
     --vscode) DO_VSCODE=1 ;;
     --dry-run) DRY_RUN=1 ;;
