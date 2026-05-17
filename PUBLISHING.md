@@ -139,7 +139,7 @@ Useful for teams that do not use npm but want versioned installs.
 
 ### Keeping external tool references current
 
-The install script references external tools by their latest published version. When GSD, RTK, caveman, or tldt release breaking changes:
+The install script references external tools by their latest published version. When GSD, RTK, or tldt release breaking changes:
 
 1. Update the relevant install function in `install.sh`.
 2. Update the command file that references the tool.

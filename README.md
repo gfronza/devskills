@@ -16,8 +16,17 @@ The following are installed as separate tools. The install script handles this.
 |------|--------|---------|
 | GSD (Get Shit Done) | https://github.com/gsd-build/get-shit-done | Full dev lifecycle workflow: discuss, plan, execute, verify, ship |
 | RTK | https://github.com/rtk-ai/rtk | CLI proxy; reduces AI context token consumption 60-90% |
-| Caveman | https://github.com/juliusbrussee/caveman | Response compression; reduces output tokens ~65% |
 | tldt | https://github.com/gleicon/tldt | Extractive text summarization; no LLM, no cost |
+
+## References
+
+Not installed. devskills ships its own prompt commands; these are the upstream sources the prompts are based on.
+
+| Reference | Source | Used by |
+|-----------|--------|---------|
+| Caveman | https://github.com/juliusbrussee/caveman | `/caveman-lite`, `/caveman-ultra` response compression prompts |
+| Tiger Style | https://tigerstyle.dev/ | `/tiger-style` engineering principles — safety, performance, developer experience |
+| mattpocock/skills | https://github.com/mattpocock/skills | `/grill-me`, `/handoff`, `/zoom-out`, `/tdd`, `/write-a-skill` — adapted from the productivity and engineering skills |
 
 ## Included Skills
 
@@ -33,6 +42,11 @@ The following are installed as separate tools. The install script handles this.
 | Rust Review | `/rust-review` | Rust review: cargo geiger, unsafe counts, clippy, audit |
 | Frontend | `/frontend` | Frontend task mode: components, state, API integration, a11y |
 | Spec | `/spec` | Convert a description into a verifiable structured specification |
+| Grill Me | `/grill-me` | Relentless plan interview — resolve every decision branch (`--record` logs to DECISIONS.md) |
+| Handoff | `/handoff` | Compact the conversation into a handoff doc for a fresh agent |
+| Zoom Out | `/zoom-out` | Step up a layer — map modules, callers, and boundaries |
+| TDD | `/tdd` | Test-first, one vertical slice at a time; behavior over implementation |
+| Write a Skill | `/write-a-skill` | Author a new devskills command in the repo conventions |
 
 ## Language Profiles
 
@@ -52,8 +66,8 @@ devskills/
 ├── README.md
 ├── PUBLISHING.md             # npm publish, GitHub releases, CI
 ├── package.json              # npm package
-├── install.sh                # shell installer (--dry-run, --skip-external, --lang)
-├── claude/commands/          # Claude Code skills (10 .md files)
+├── install.sh                # shell installer (--dry-run, --skip-external, --lang, --claude-dir)
+├── claude/commands/          # Claude Code skills (15 .md files)
 │   ├── tiger-style.md
 │   ├── caveman-lite.md
 │   ├── caveman-ultra.md
@@ -63,7 +77,12 @@ devskills/
 │   ├── go-review.md
 │   ├── ts-review.md
 │   ├── rust-review.md
-│   └── frontend.md
+│   ├── frontend.md
+│   ├── grill-me.md
+│   ├── handoff.md
+│   ├── zoom-out.md
+│   ├── tdd.md
+│   └── write-a-skill.md
 ├── opencode/commands/        # OpenCode skills (same files)
 ├── cursor/rules/             # Cursor rules (auto-activate by file glob)
 │   ├── tiger-style.mdc       # alwaysApply: true
@@ -94,12 +113,19 @@ git clone https://github.com/gleicon/devskills.git ~/.devskills
 ~/.devskills/install.sh
 ```
 
-That's it. Skills are copied to `~/.claude/commands/` and `~/.opencode/commands/`. External tools (GSD, RTK, Caveman, tldt) are installed automatically if their prerequisites are present.
+That's it. Skills are copied to `~/.claude/commands/` and `~/.opencode/commands/`. External tools (GSD, RTK, tldt) are installed automatically if their prerequisites are present.
 
 Skip external tools:
 
 ```bash
 ~/.devskills/install.sh --skip-external
+```
+
+Custom Claude config dir:
+
+```bash
+~/.devskills/install.sh --claude-dir=~/.config/claude
+CLAUDE_CONFIG_DIR=~/.config/claude ~/.devskills/install.sh
 ```
 
 ### Per-project language profile
@@ -113,7 +139,7 @@ Run from inside a project directory:
 ```
 
 The installer writes to:
-- `~/.claude/commands/` — Claude Code user-level skills
+- `~/.claude/commands/` — Claude Code user-level skills (override with `--claude-dir`)
 - `~/.opencode/commands/` — OpenCode user-level skills
 - `.cursor/rules/` — Cursor rules (project-local)
 - `.github/copilot-instructions.md` — VSCode Copilot (project-local)
@@ -122,11 +148,18 @@ The installer writes to:
 
 ```
 --lang=<profile>     go | typescript | javascript | rust
---skip-external      skip GSD, RTK, caveman, tldt installation
---cursor             install Cursor rules into current project
---vscode             install VSCode Copilot instructions into current project
+--claude-dir=<path>  Claude config dir (default: $CLAUDE_CONFIG_DIR or ~/.claude)
+--skip-external      skip GSD, RTK, tldt installation
+--skip-cursor        skip Cursor rules install (install.sh)
+--skip-vscode        skip VSCode Copilot install (install.sh)
+--cursor             install Cursor rules into current project (setup.sh)
+--vscode             install VSCode Copilot instructions into current project (setup.sh)
 --dry-run            show what would happen, write nothing
 ```
+
+Running `install.sh` from inside the devskills source repo auto-skips the
+Cursor and VSCode installs and ignores `--lang`, so it does not write
+contributor files (`.cursor/`, `.github/`, `CLAUDE.md`) into the repo.
 
 ### Publishing
 

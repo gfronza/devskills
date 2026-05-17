@@ -2,7 +2,7 @@
 set -euo pipefail
 
 DEVSKILLS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CLAUDE_COMMANDS_DIR="${HOME}/.claude/commands"
+CLAUDE_CONFIG_DIR="${CLAUDE_CONFIG_DIR:-${HOME}/.claude}"
 OPENCODE_COMMANDS_DIR="${HOME}/.opencode/commands"
 
 log() { printf '[devskills] %s\n' "$1"; }
@@ -14,19 +14,52 @@ warn() { printf '[devskills] WARN: %s\n' "$1" >&2; }
 
 LANG_PROFILE=""
 SKIP_EXTERNAL=0
+SKIP_CURSOR=0
+SKIP_VSCODE=0
 DRY_RUN=0
 
 for arg in "$@"; do
   case "$arg" in
     --lang=*) LANG_PROFILE="${arg#--lang=}" ;;
+    --claude-dir=*) CLAUDE_CONFIG_DIR="${arg#--claude-dir=}" ;;
     --skip-external) SKIP_EXTERNAL=1 ;;
+    --skip-cursor) SKIP_CURSOR=1 ;;
+    --skip-vscode) SKIP_VSCODE=1 ;;
     --dry-run) DRY_RUN=1 ;;
     --help|-h)
-      echo "Usage: install.sh [--lang=go|typescript|javascript|rust] [--skip-external] [--dry-run]"
+      echo "Usage: install.sh [--lang=go|typescript|javascript|rust] [--claude-dir=PATH] [--skip-external] [--skip-cursor] [--skip-vscode] [--dry-run]"
+      echo ""
+      echo "  --claude-dir=PATH   Claude config dir (default: \$CLAUDE_CONFIG_DIR or \$HOME/.claude)"
+      echo "  --skip-external     Skip external tool installation (GSD, RTK, tldt)"
+      echo "  --skip-cursor       Skip Cursor rules install into the current project"
+      echo "  --skip-vscode       Skip VSCode Copilot instructions install into the current project"
       exit 0
       ;;
   esac
 done
+
+# Expand leading ~ in --claude-dir value
+case "$CLAUDE_CONFIG_DIR" in
+  "~") CLAUDE_CONFIG_DIR="${HOME}" ;;
+  "~/"*) CLAUDE_CONFIG_DIR="${HOME}/${CLAUDE_CONFIG_DIR#~/}" ;;
+esac
+CLAUDE_COMMANDS_DIR="${CLAUDE_CONFIG_DIR}/commands"
+
+# Auto-skip project-local installers when run from inside the devskills
+# source repo — otherwise they write contributor files into the repo itself.
+case "${PWD}/" in
+  "${DEVSKILLS_DIR}"/*)
+    if [ "$SKIP_CURSOR" -eq 0 ] || [ "$SKIP_VSCODE" -eq 0 ]; then
+      warn "Running inside the devskills source repo; skipping Cursor/VSCode install."
+    fi
+    SKIP_CURSOR=1
+    SKIP_VSCODE=1
+    if [ -n "$LANG_PROFILE" ]; then
+      warn "Running inside the devskills source repo; ignoring --lang to avoid writing CLAUDE.md into the repo."
+      LANG_PROFILE=""
+    fi
+    ;;
+esac
 
 # ------------------------------------------------------------
 # Helpers
@@ -49,7 +82,7 @@ install_file() {
 # ------------------------------------------------------------
 
 install_claude() {
-  if command -v claude &>/dev/null || [ -d "${HOME}/.claude" ]; then
+  if command -v claude &>/dev/null || [ -d "${CLAUDE_CONFIG_DIR}" ]; then
     log "Installing Claude Code commands to ${CLAUDE_COMMANDS_DIR}"
     mkdir -p "${CLAUDE_COMMANDS_DIR}"
     for f in "${DEVSKILLS_DIR}/claude/commands/"*.md; do
@@ -110,25 +143,6 @@ install_rtk() {
     fi
   else
     warn "Neither cargo nor brew found. Install RTK manually: https://github.com/rtk-ai/rtk"
-  fi
-}
-
-install_caveman() {
-  if command -v node &>/dev/null; then
-    local node_major
-    node_major=$(node -e 'process.stdout.write(process.version.split(".")[0].slice(1))')
-    if [ "$node_major" -ge 18 ]; then
-      log "Installing Caveman (lite mode)..."
-      if [ "$DRY_RUN" -eq 0 ]; then
-        curl -fsSL https://raw.githubusercontent.com/JuliusBrussee/caveman/main/install.sh | bash 2>&1 | tail -5
-      else
-        log "DRY: would curl-install caveman"
-      fi
-    else
-      warn "Node >= 18 required for Caveman. Found: $node_major"
-    fi
-  else
-    warn "Node not found. Install Caveman manually: https://github.com/juliusbrussee/caveman"
   fi
 }
 
@@ -233,14 +247,23 @@ log "source: ${DEVSKILLS_DIR}"
 
 install_claude
 install_opencode
-install_cursor
-install_vscode
+
+if [ "$SKIP_CURSOR" -eq 0 ]; then
+  install_cursor
+else
+  log "Skipping Cursor rules (--skip-cursor)"
+fi
+
+if [ "$SKIP_VSCODE" -eq 0 ]; then
+  install_vscode
+else
+  log "Skipping VSCode Copilot instructions (--skip-vscode)"
+fi
 
 if [ "$SKIP_EXTERNAL" -eq 0 ]; then
   log "Installing external tools..."
   install_gsd
   install_rtk
-  install_caveman
   install_tldt
 else
   log "Skipping external tools (--skip-external)"
