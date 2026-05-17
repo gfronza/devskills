@@ -2,7 +2,7 @@
 set -euo pipefail
 
 DEVSKILLS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CLAUDE_COMMANDS_DIR="${HOME}/.claude/commands"
+CLAUDE_CONFIG_DIR="${CLAUDE_CONFIG_DIR:-${HOME}/.claude}"
 OPENCODE_COMMANDS_DIR="${HOME}/.opencode/commands"
 
 log() { printf '[devskills] %s\n' "$1"; }
@@ -19,14 +19,24 @@ DRY_RUN=0
 for arg in "$@"; do
   case "$arg" in
     --lang=*) LANG_PROFILE="${arg#--lang=}" ;;
+    --claude-dir=*) CLAUDE_CONFIG_DIR="${arg#--claude-dir=}" ;;
     --skip-external) SKIP_EXTERNAL=1 ;;
     --dry-run) DRY_RUN=1 ;;
     --help|-h)
-      echo "Usage: install.sh [--lang=go|typescript|javascript|rust] [--skip-external] [--dry-run]"
+      echo "Usage: install.sh [--lang=go|typescript|javascript|rust] [--claude-dir=PATH] [--skip-external] [--dry-run]"
+      echo ""
+      echo "  --claude-dir=PATH   Claude config dir (default: \$CLAUDE_CONFIG_DIR or \$HOME/.claude)"
       exit 0
       ;;
   esac
 done
+
+# Expand leading ~ in --claude-dir value
+case "$CLAUDE_CONFIG_DIR" in
+  "~") CLAUDE_CONFIG_DIR="${HOME}" ;;
+  "~/"*) CLAUDE_CONFIG_DIR="${HOME}/${CLAUDE_CONFIG_DIR#~/}" ;;
+esac
+CLAUDE_COMMANDS_DIR="${CLAUDE_CONFIG_DIR}/commands"
 
 # ------------------------------------------------------------
 # Helpers
@@ -49,7 +59,7 @@ install_file() {
 # ------------------------------------------------------------
 
 install_claude() {
-  if command -v claude &>/dev/null || [ -d "${HOME}/.claude" ]; then
+  if command -v claude &>/dev/null || [ -d "${CLAUDE_CONFIG_DIR}" ]; then
     log "Installing Claude Code commands to ${CLAUDE_COMMANDS_DIR}"
     mkdir -p "${CLAUDE_COMMANDS_DIR}"
     for f in "${DEVSKILLS_DIR}/claude/commands/"*.md; do

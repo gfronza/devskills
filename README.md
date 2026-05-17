@@ -52,7 +52,7 @@ devskills/
 ├── README.md
 ├── PUBLISHING.md             # npm publish, GitHub releases, CI
 ├── package.json              # npm package
-├── install.sh                # shell installer (--dry-run, --skip-external, --lang)
+├── install.sh                # shell installer (--dry-run, --skip-external, --lang, --claude-dir)
 ├── claude/commands/          # Claude Code skills (10 .md files)
 │   ├── tiger-style.md
 │   ├── caveman-lite.md
@@ -102,6 +102,13 @@ Skip external tools:
 ~/.devskills/install.sh --skip-external
 ```
 
+Custom Claude config dir:
+
+```bash
+~/.devskills/install.sh --claude-dir=~/.config/claude
+CLAUDE_CONFIG_DIR=~/.config/claude ~/.devskills/install.sh
+```
+
 ### Per-project language profile
 
 Run from inside a project directory:
@@ -113,7 +120,7 @@ Run from inside a project directory:
 ```
 
 The installer writes to:
-- `~/.claude/commands/` — Claude Code user-level skills
+- `~/.claude/commands/` — Claude Code user-level skills (override with `--claude-dir`)
 - `~/.opencode/commands/` — OpenCode user-level skills
 - `.cursor/rules/` — Cursor rules (project-local)
 - `.github/copilot-instructions.md` — VSCode Copilot (project-local)
@@ -122,6 +129,7 @@ The installer writes to:
 
 ```
 --lang=<profile>     go | typescript | javascript | rust
+--claude-dir=<path>  Claude config dir (default: $CLAUDE_CONFIG_DIR or ~/.claude)
 --skip-external      skip GSD, RTK, caveman, tldt installation
 --cursor             install Cursor rules into current project
 --vscode             install VSCode Copilot instructions into current project
