@@ -113,25 +113,9 @@ upgrade_tldt() {
   fi
 }
 
-# ------------------------------------------------------------
-# Caveman — managed by its own installer; re-run to upgrade
-# ------------------------------------------------------------
-upgrade_caveman() {
-  if command -v node &>/dev/null; then
-    log "Upgrading Caveman..."
-    if [ "$DRY_RUN" -eq 0 ]; then
-      curl -fsSL https://raw.githubusercontent.com/JuliusBrussee/caveman/main/install.sh | bash
-    else
-      log "DRY: would curl-reinstall caveman"
-    fi
-  else
-    warn "Node not found. Upgrade Caveman manually: https://github.com/juliusbrussee/caveman"
-  fi
-}
-
 log "Force-upgrading all external tools..."
 upgrade_gsd
 upgrade_rtk
 upgrade_tldt
-upgrade_caveman
+log "Caveman: bundled in devskills prompt files. Run scripts/update.sh to update."
 log "Done."
