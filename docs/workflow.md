@@ -2,7 +2,7 @@
 
 This document describes the standard specification-to-product workflow used in devskills.
 
-The execution engine is GSD (Get Shit Done): https://github.com/gsd-build/get-shit-done
+The execution engine is GSD (Get Shit Done): https://github.com/open-gsd/get-shit-done-redux
 
 ---
 

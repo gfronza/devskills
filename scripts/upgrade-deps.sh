@@ -22,15 +22,37 @@ for arg in "$@"; do
 done
 
 # ------------------------------------------------------------
-# GSD — npx always fetches from registry; @latest resolves fresh
+# GSD Redux — purge old gsd-build hooks, then npx @latest
+# Old GSD installed hooks with a gsd-hook-version: header; remove before upgrading.
 # ------------------------------------------------------------
+purge_old_gsd_hooks() {
+  local hooks_dir="${HOME}/.claude/hooks"
+  [ -d "$hooks_dir" ] || return 0
+  local found=0
+  for f in "$hooks_dir"/*.sh "$hooks_dir"/*.js; do
+    [ -f "$f" ] || continue
+    if grep -q "gsd-hook-version:" "$f" 2>/dev/null; then
+      if [ "$DRY_RUN" -eq 0 ]; then
+        rm "$f"
+        log "removed old GSD hook: $(basename "$f")"
+      else
+        log "DRY: would remove old GSD hook: $f"
+      fi
+      found=1
+    fi
+  done
+  [ "$found" -eq 1 ] && log "Old GSD hooks removed. Redux will reinstall fresh hooks."
+  return 0
+}
+
 upgrade_gsd() {
+  purge_old_gsd_hooks
   if command -v npx &>/dev/null; then
-    log "Upgrading GSD — interactive, follow prompts..."
+    log "Upgrading GSD Redux — interactive, follow prompts..."
     if [ "$DRY_RUN" -eq 0 ]; then
-      npx get-shit-done-cc@latest
+      npx @opengsd/get-shit-done-redux@latest
     else
-      log "DRY: would run npx get-shit-done-cc@latest"
+      log "DRY: would run npx @opengsd/get-shit-done-redux@latest"
     fi
   else
     warn "npx not found. Skip GSD upgrade."

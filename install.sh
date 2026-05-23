@@ -113,16 +113,37 @@ install_opencode() {
 # External tools
 # ------------------------------------------------------------
 
+purge_old_gsd() {
+  local hooks_dir="${CLAUDE_CONFIG_DIR}/hooks"
+  [ -d "$hooks_dir" ] || return 0
+  local found=0
+  for f in "$hooks_dir"/*.sh "$hooks_dir"/*.js; do
+    [ -f "$f" ] || continue
+    if grep -q "gsd-hook-version:" "$f" 2>/dev/null; then
+      if [ "$DRY_RUN" -eq 0 ]; then
+        rm "$f"
+        log "removed old GSD hook: $(basename "$f")"
+      else
+        log "DRY: would remove old GSD hook: $f"
+      fi
+      found=1
+    fi
+  done
+  [ "$found" -eq 1 ] && log "Old GSD hooks removed. New GSD will reinstall fresh hooks."
+  return 0
+}
+
 install_gsd() {
+  purge_old_gsd
   if command -v npx &>/dev/null; then
-    log "Installing GSD (Get Shit Done) — interactive, follow prompts..."
+    log "Installing GSD Redux — interactive, follow prompts..."
     if [ "$DRY_RUN" -eq 0 ]; then
-      npx get-shit-done-cc@latest
+      npx @opengsd/get-shit-done-redux@latest
     else
-      log "DRY: would run npx get-shit-done-cc@latest"
+      log "DRY: would run npx @opengsd/get-shit-done-redux@latest"
     fi
   else
-    warn "npx not found. Install GSD manually: https://github.com/gsd-build/get-shit-done"
+    warn "npx not found. Install GSD manually: https://github.com/open-gsd/get-shit-done-redux"
   fi
 }
 

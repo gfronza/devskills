@@ -89,7 +89,7 @@ GSD manages context rot across long builds by storing state in `.planning/` and 
 /gsd-ship            → create PR from verified work
 ```
 
-Note: `/gsd-*` commands are provided by GSD, not devskills. Install GSD separately (`npx get-shit-done-cc@latest`) or let `install.sh` handle it.
+Note: `/gsd-*` commands are provided by GSD Redux, not devskills. Install GSD separately (`npx @opengsd/get-shit-done-redux@latest`) or let `install.sh` handle it.
 
 **4. Keep quality high between phases**
 
@@ -152,7 +152,7 @@ Installed by `install.sh`. Managed by `upgrade-deps.sh`.
 
 | Tool | Purpose |
 |------|---------|
-| [GSD](https://github.com/gsd-build/get-shit-done) | Full dev lifecycle: discuss, plan, execute, verify, ship |
+| [GSD Redux](https://github.com/open-gsd/get-shit-done-redux) | Full dev lifecycle: discuss, plan, execute, verify, ship |
 | [RTK](https://github.com/rtk-ai/rtk) | CLI proxy; reduces AI context token use 60-90% |
 | [tldt](https://github.com/gleicon/tldt) | Extractive text summarization; no LLM, no cost |
 

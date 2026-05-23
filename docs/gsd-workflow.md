@@ -1,7 +1,7 @@
 # Get Shit Done: Spec to Production
 
-Source: https://github.com/gsd-build/get-shit-done  
-Install: `npx get-shit-done-cc@latest`
+Source: https://github.com/open-gsd/get-shit-done-redux  
+Install: `npx @opengsd/get-shit-done-redux@latest`
 
 GSD is a meta-prompting framework for AI coding tools. It manages context rot (the quality degradation that happens as your session fills up) by persisting state in a `.planning/` directory and delegating heavy work to sub-agents with fresh context windows.
 
@@ -13,7 +13,7 @@ This document covers how to move from a `/spec` output into a GSD-managed projec
 
 ```bash
 # Install GSD skill set into Claude Code, OpenCode, or other supported tools
-npx get-shit-done-cc@latest
+npx @opengsd/get-shit-done-redux@latest
 
 # Verify
 claude /gsd-help    # in Claude Code
@@ -182,7 +182,7 @@ GSD keeps context lean. For best results:
 
 **GSD commands not found:**
 ```bash
-npx get-shit-done-cc@latest   # reinstall
+npx @opengsd/get-shit-done-redux@latest   # reinstall
 ```
 
 **Context too full mid-session:**
