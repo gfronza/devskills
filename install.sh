@@ -46,10 +46,12 @@ for arg in "$@"; do
   esac
 done
 
-# Expand leading ~ in --claude-dir value
+# Expand leading ~ in --claude-dir value.
+# Quote the strip pattern: an unquoted ~/ undergoes tilde expansion itself,
+# strips nothing, and yields "$HOME/~/.claude".
 case "$CLAUDE_CONFIG_DIR" in
   "~") CLAUDE_CONFIG_DIR="${HOME}" ;;
-  "~/"*) CLAUDE_CONFIG_DIR="${HOME}/${CLAUDE_CONFIG_DIR#~/}" ;;
+  "~/"*) CLAUDE_CONFIG_DIR="${HOME}/${CLAUDE_CONFIG_DIR#"~/"}" ;;
 esac
 CLAUDE_COMMANDS_DIR="${CLAUDE_CONFIG_DIR}/commands"
 
