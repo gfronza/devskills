@@ -16,6 +16,8 @@ LANG_PROFILE=""
 SKIP_EXTERNAL=0
 SKIP_CURSOR=0
 SKIP_VSCODE=0
+CONCISE=0
+HINTS=0
 DRY_RUN=0
 
 for arg in "$@"; do
@@ -25,15 +27,19 @@ for arg in "$@"; do
     --skip-external) SKIP_EXTERNAL=1 ;;
     --skip-cursor) SKIP_CURSOR=1 ;;
     --skip-vscode) SKIP_VSCODE=1 ;;
+    --concise) CONCISE=1 ;;
+    --hints) HINTS=1 ;;
     --dry-run) DRY_RUN=1 ;;
     --help|-h)
-      echo "Usage: install.sh [--lang=go|typescript|javascript|rust] [--claude-dir=PATH] [--skip-external] [--skip-cursor] [--skip-vscode] [--dry-run]"
+      echo "Usage: install.sh [--lang=go|typescript|javascript|rust] [--claude-dir=PATH] [--skip-external] [--skip-cursor] [--skip-vscode] [--concise] [--hints] [--dry-run]"
       echo ""
       echo "  --lang=<profile>    Language profile to write: go|typescript|javascript|rust"
       echo "  --claude-dir=PATH   Claude config dir (default: \$CLAUDE_CONFIG_DIR or \$HOME/.claude)"
       echo "  --skip-external     Skip external tool installation (GSD, RTK, tldt)"
       echo "  --skip-cursor       Skip Cursor rules install into the current project"
       echo "  --skip-vscode       Skip VSCode Copilot instructions install into the current project"
+      echo "  --concise           Add a terse-response directive to AGENTS.md (with --lang)"
+      echo "  --hints             Add a devskills tooling reference to AGENTS.md (with --lang)"
       echo "  --dry-run           Show what would happen, write nothing"
       exit 0
       ;;
@@ -230,18 +236,17 @@ install_tldt() {
 
 install_lang_profile() {
   local lang="$1"
-  local profile_file="${DEVSKILLS_DIR}/prompts/language/${lang}.md"
 
-  if [ ! -f "$profile_file" ]; then
+  if [ -n "$lang" ] && [ ! -f "${DEVSKILLS_DIR}/prompts/language/${lang}.md" ]; then
     warn "No language profile for '${lang}'. Available: go, typescript, javascript, rust"
     return 1
   fi
 
-  log "Setting up language profile: ${lang}"
+  log "Writing AGENTS.md baseline${lang:+ + ${lang} profile} to ${PWD}"
 
   # shellcheck source=scripts/lib/profile.sh
   source "${DEVSKILLS_DIR}/scripts/lib/profile.sh"
-  devskills_apply_profile "$lang" "$profile_file" "$PWD" "$DRY_RUN"
+  devskills_apply "${DEVSKILLS_DIR}/prompts" "$PWD" "$DRY_RUN" "$lang" "$CONCISE" "$HINTS"
 }
 
 # ------------------------------------------------------------

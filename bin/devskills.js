@@ -28,12 +28,12 @@ devskills — AI skill package for Claude Code, OpenCode, Cursor, VSCode
 
 Commands:
   install              Install skills to all detected environments
-  setup --lang=<lang>  Configure current project with a language profile
+  setup [--lang=<lang>] Configure current project (AGENTS.md baseline + options)
   update               Pull latest and reinstall skills
   list                 List available skills and language profiles
   version              Print the installed devskills version
 
-Language profiles: go, typescript, javascript, rust
+Language profiles (optional): go, typescript, javascript, rust
 
 Options (pass through to install/setup):
   --skip-external      Skip external tool installation (GSD, RTK, tldt)
@@ -43,10 +43,13 @@ Options (pass through to install/setup):
   --skip-vscode        Skip VSCode Copilot install (install)
   --cursor             Install Cursor rules into current project (setup)
   --vscode             Install VSCode Copilot instructions (setup)
+  --concise            Add a terse-response directive to AGENTS.md (setup/install)
+  --hints              Add a devskills tooling reference to AGENTS.md (setup/install)
   --dry-run            Show what would happen without writing files
 
 Examples:
   npx devskills install
+  npx devskills setup                       # AGENTS.md baseline only
   npx devskills setup --lang=go --cursor
   npx devskills install --lang=typescript --skip-external
   npx devskills install --claude-dir=~/.config/claude

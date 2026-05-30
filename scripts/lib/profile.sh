@@ -1,15 +1,20 @@
-# profile.sh — shared language-profile installer for devskills.
+# profile.sh — shared AGENTS.md installer for devskills.
 #
-# Sourced by install.sh and scripts/setup.sh. Writes the language profile
-# into AGENTS.md (the canonical, cross-tool instructions file) inside a
-# managed block, and makes CLAUDE.md import it via `@AGENTS.md` so Claude
-# Code and OpenCode read the same content with no duplication.
+# Sourced by install.sh and scripts/setup.sh. Builds a project's AGENTS.md
+# from stacked managed blocks and makes CLAUDE.md import it via `@AGENTS.md`
+# so Claude Code and OpenCode read the same content with no duplication.
+#
+# Blocks (in order), each delimited by <!-- BEGIN/END devskills:<id> -->:
+#   base      always — universal engineering principles
+#   concise   optional — terse-response directive (--concise)
+#   tooling   optional — devskills tooling reference (--hints)
+#   language  optional — per-language profile (--lang=<x>)
 #
 # Behavior:
-#   - Never clobbers: existing files are backed up (sibling .bak) before
-#     any change, and only when the content actually changes.
-#   - Idempotent: re-running with the same profile is a no-op; re-running
-#     with a different --lang replaces the managed block in place.
+#   - Never clobbers: existing files are backed up (sibling .bak) before any
+#     change, and only when the content actually changes.
+#   - Idempotent: re-running is a no-op; changing options swaps blocks in
+#     place. CLAUDE.md gets a single `@AGENTS.md` import.
 
 [ -n "${DEVSKILLS_PROFILE_LIB:-}" ] && return 0
 DEVSKILLS_PROFILE_LIB=1
@@ -17,19 +22,28 @@ DEVSKILLS_PROFILE_LIB=1
 _dsk_log()  { printf '[devskills] %s\n' "$1"; }
 _dsk_warn() { printf '[devskills] WARN: %s\n' "$1" >&2; }
 
-# Back up a file to a sibling, timestamped .bak. One stamp per run.
-_dsk_backup() {
+# Per-run bookkeeping: files we created this run (never back those up), and
+# files already backed up this run (back a pre-existing file up at most once).
+_dsk_mark_created()    { _DSK_CREATED="${_DSK_CREATED:-} $1"; }
+_dsk_was_created()     { case " ${_DSK_CREATED:-} " in *" $1 "*) return 0 ;; esac; return 1; }
+
+# Back up a pre-existing file once per run, to a sibling timestamped .bak.
+# No-op for files this run created, or already backed up.
+_dsk_backup_once() {
   local f="$1"
+  _dsk_was_created "$f" && return 0
+  case " ${_DSK_BACKED:-} " in *" $f "*) return 0 ;; esac
   : "${DEVSKILLS_STAMP:=$(date +%Y%m%d-%H%M%S)}"
   local bak="${f}.${DEVSKILLS_STAMP}.bak"
   cp "$f" "$bak"
+  _DSK_BACKED="${_DSK_BACKED:-} $f"
   _dsk_log "backed up $(basename "$f") -> $(basename "$bak")"
 }
 
 # Insert or replace a managed block in a file.
 #   $1 file  $2 block id  $3 file holding the full block (incl. markers)
 #   $4 dry-run (1|0)  $5 display label
-# Returns without writing when the result would be byte-identical.
+# Writes nothing when the result would be byte-identical.
 _dsk_upsert_block() {
   local file="$1" id="$2" block_file="$3" dry="$4" label="${5:-$1}"
   local begin="<!-- BEGIN devskills:${id} -->"
@@ -71,61 +85,92 @@ _dsk_upsert_block() {
   fi
 
   if [ -f "$file" ]; then
-    _dsk_backup "$file"
+    _dsk_backup_once "$file"   # no-op for files we created earlier this run
     mv "$tmp" "$file"
     _dsk_log "updated ${label}"
   else
     mv "$tmp" "$file"
+    _dsk_mark_created "$file"
     _dsk_log "created ${label}"
   fi
 }
 
-# Apply a language profile to a project directory.
-#   $1 lang  $2 profile .md file  $3 target dir  $4 dry-run (1|0)
-devskills_apply_profile() {
-  local lang="$1" profile="$2" dir="$3" dry="$4"
+# Wrap a source file in a managed block and upsert it into <dir>/AGENTS.md.
+#   $1 id  $2 source file  $3 dir  $4 dry-run  $5 optional note line
+_dsk_inject() {
+  local id="$1" src="$2" dir="$3" dry="$4" note="${5:-}"
   local agents="${dir}/AGENTS.md"
-  local claude="${dir}/CLAUDE.md"
-
-  # 1. Canonical profile -> AGENTS.md (managed block).
   local blk; blk="$(mktemp)"
   {
-    echo "<!-- BEGIN devskills:language -->"
-    echo "<!-- profile: ${lang} — managed by devskills; edits between these markers are overwritten -->"
-    cat "$profile"
+    echo "<!-- BEGIN devskills:${id} -->"
+    [ -n "$note" ] && echo "$note"
+    cat "$src"
   } > "$blk"
-  [ -z "$(tail -c1 "$profile")" ] || printf '\n' >> "$blk"
-  echo "<!-- END devskills:language -->" >> "$blk"
-  _dsk_upsert_block "$agents" "language" "$blk" "$dry" "AGENTS.md"
+  [ -z "$(tail -c1 "$src")" ] || printf '\n' >> "$blk"
+  echo "<!-- END devskills:${id} -->" >> "$blk"
+  _dsk_upsert_block "$agents" "$id" "$blk" "$dry" "AGENTS.md (${id})"
   rm -f "$blk"
+}
 
-  # 2. CLAUDE.md imports AGENTS.md (skip if it already imports it manually).
+# Ensure CLAUDE.md imports AGENTS.md (skip if it already does manually).
+_dsk_ensure_claude_import() {
+  local dir="$1" dry="$2"
+  local claude="${dir}/CLAUDE.md"
   if [ -f "$claude" ] && grep -qE '^[[:space:]]*@AGENTS\.md' "$claude" \
        && ! grep -qF "<!-- BEGIN devskills:import -->" "$claude"; then
     _dsk_log "CLAUDE.md already imports AGENTS.md; leaving as-is."
-  else
-    local imp; imp="$(mktemp)"
-    {
-      echo "<!-- BEGIN devskills:import -->"
-      echo "@AGENTS.md"
-      echo "<!-- END devskills:import -->"
-    } > "$imp"
-    _dsk_upsert_block "$claude" "import" "$imp" "$dry" "CLAUDE.md"
-    rm -f "$imp"
+    return 0
+  fi
+  local imp; imp="$(mktemp)"
+  {
+    echo "<!-- BEGIN devskills:import -->"
+    echo "@AGENTS.md"
+    echo "<!-- END devskills:import -->"
+  } > "$imp"
+  _dsk_upsert_block "$claude" "import" "$imp" "$dry" "CLAUDE.md"
+  rm -f "$imp"
+}
+
+# Apply the devskills baseline (and optional layers) to a project.
+#   $1 prompts dir  $2 target dir  $3 dry-run (1|0)
+#   $4 lang ("" for none)  $5 concise (1|0)  $6 hints (1|0)
+devskills_apply() {
+  local pdir="$1" dir="$2" dry="$3" lang="$4" concise="$5" hints="$6"
+
+  # 1. Base engineering principles (always).
+  _dsk_inject base "${pdir}/system/agents-base.md" "$dir" "$dry"
+
+  # 2. Concise-response directive (optional).
+  if [ "$concise" = "1" ]; then
+    _dsk_inject concise "${pdir}/system/concise.md" "$dir" "$dry"
   fi
 
-  # 3. Flag a legacy inline profile from older devskills versions.
-  if [ -f "$claude" ] && grep -qF "devskills language profile" "$claude"; then
+  # 3. devskills tooling reference (optional).
+  if [ "$hints" = "1" ]; then
+    _dsk_inject tooling "${pdir}/system/tooling.md" "$dir" "$dry"
+  fi
+
+  # 4. Language profile (optional).
+  if [ -n "$lang" ]; then
+    _dsk_inject language "${pdir}/language/${lang}.md" "$dir" "$dry" \
+      "<!-- profile: ${lang} — managed by devskills; edits between these markers are overwritten -->"
+  fi
+
+  # 5. CLAUDE.md imports AGENTS.md.
+  _dsk_ensure_claude_import "$dir" "$dry"
+
+  # 6. Flag a legacy inline profile from older devskills versions.
+  if [ -f "${dir}/CLAUDE.md" ] && grep -qF "devskills language profile" "${dir}/CLAUDE.md"; then
     _dsk_warn "CLAUDE.md has a legacy inline devskills profile."
-    _dsk_warn "The profile now lives in AGENTS.md — remove the old inline block from CLAUDE.md."
+    _dsk_warn "Content now lives in AGENTS.md — remove the old inline block from CLAUDE.md."
   fi
 
-  # 4. Record the active language.
+  # 7. Record state.
   if [ "$dry" = "1" ]; then
-    _dsk_log "[dry] would write ${dir}/.devskills/language: ${lang}"
+    _dsk_log "[dry] would write ${dir}/.devskills/language: ${lang:-(none)}"
   else
     mkdir -p "${dir}/.devskills"
     echo "${lang}" > "${dir}/.devskills/language"
-    _dsk_log "wrote .devskills/language: ${lang}"
+    _dsk_log "wrote .devskills/language: ${lang:-(none)}"
   fi
 }

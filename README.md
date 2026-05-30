@@ -25,12 +25,15 @@ Custom Claude config dir:
 ~/.devskills/install.sh --claude-dir=~/.config/claude
 ```
 
-Per-project language profile (run from inside a project):
+Per-project setup (run from inside a project):
 
 ```bash
-~/.devskills/scripts/setup.sh --lang=go
+~/.devskills/scripts/setup.sh                        # baseline AGENTS.md only
+~/.devskills/scripts/setup.sh --lang=go              # baseline + Go profile
 ~/.devskills/scripts/setup.sh --lang=typescript --cursor --vscode
 ```
+
+`setup.sh` writes a universal engineering baseline to `AGENTS.md` and points `CLAUDE.md` at it via `@AGENTS.md`; `--lang` stacks a language profile on top. See [Project Setup](#project-setup) below.
 
 Keep devskills up to date:
 
@@ -53,7 +56,9 @@ Keep devskills up to date:
 ### setup.sh flags (per-project)
 
 ```
---lang=<profile>     required; writes language profile to AGENTS.md (CLAUDE.md imports it)
+--lang=<profile>     optional; stacks a language profile (go|typescript|javascript|rust)
+--concise            add a terse-response directive to AGENTS.md
+--hints              add a devskills tooling reference to AGENTS.md
 --cursor             install Cursor rules into current project
 --vscode             install VSCode Copilot instructions into current project
 --dry-run            show what would happen, write nothing
@@ -126,9 +131,22 @@ Full walkthrough: [docs/gsd-workflow.md](docs/gsd-workflow.md)
 | TDD | `/tdd` | Test-first, one vertical slice at a time; behavior over implementation |
 | Write a Skill | `/write-a-skill` | Author a new devskills command in the repo conventions |
 
+## Project Setup
+
+`setup.sh` builds your project's `AGENTS.md` from stacked, independently-managed blocks, and points `CLAUDE.md` at it with a single `@AGENTS.md` import — so Claude Code (which reads `CLAUDE.md`) and OpenCode (which reads `AGENTS.md`) share the same content with no duplication.
+
+| Block | Flag | Contents |
+|-------|------|----------|
+| `base` | always | Universal engineering principles — think before coding, simplicity first, surgical changes, goal-driven execution |
+| `language` | `--lang=<x>` | Stack-specific idioms, toolchain, and review constraints |
+| `concise` | `--concise` | Terse-response directive (caveman-lite behavior, baked in) |
+| `tooling` | `--hints` | Reference list of devskills commands, tldt, and RTK |
+
+Running `setup.sh` with no flags writes just the baseline. Each block lives between `<!-- BEGIN/END devskills:<id> -->` markers, so re-running is idempotent and swapping `--lang` replaces only that block. Existing `AGENTS.md`/`CLAUDE.md` files are backed up (sibling timestamped `.bak`) once, before any change.
+
 ## Language Profiles
 
-Each profile encodes idioms, toolchain defaults, and review constraints for its stack. `setup.sh --lang=<profile>` writes the profile to `AGENTS.md` (the canonical, cross-tool instructions file) and makes `CLAUDE.md` import it via `@AGENTS.md`, so Claude Code and OpenCode read the same content. The profile lives in a managed block, so re-running with a different `--lang` swaps it cleanly; existing files are backed up before any change. It also writes `.devskills/language`.
+Each profile encodes idioms, toolchain defaults, and review constraints for its stack, and is stacked under the baseline as a `## Language Profile — <x>` section.
 
 | Profile | Stack | Use case |
 |---------|-------|---------|
@@ -141,7 +159,7 @@ Each profile encodes idioms, toolchain defaults, and review constraints for its 
 
 `install.sh` — one-time global install. Copies skills to Claude Code and OpenCode config dirs. Installs external tools. Run from anywhere.
 
-`scripts/setup.sh` — per-project configurator. Writes a language profile to `AGENTS.md` and points `CLAUDE.md` at it via `@AGENTS.md`, optionally installs Cursor rules and VSCode Copilot instructions into the current directory. Run from inside a project.
+`scripts/setup.sh` — per-project configurator. Builds `AGENTS.md` (engineering baseline + optional language/concise/tooling blocks) and points `CLAUDE.md` at it via `@AGENTS.md`, optionally installs Cursor rules and VSCode Copilot instructions into the current directory. Run from inside a project. See [Project Setup](#project-setup).
 
 `scripts/update.sh` — pulls the latest devskills repo and reinstalls skills. Use `--upgrade-deps` to also force-upgrade GSD, RTK, and tldt to their latest published versions.
 
@@ -167,6 +185,7 @@ devskills ships its own prompt commands based on these upstream sources.
 | [Caveman](https://github.com/juliusbrussee/caveman) | `/caveman-lite`, `/caveman-ultra` |
 | [mattpocock/skills](https://github.com/mattpocock/skills) | `/grill-me`, `/handoff`, `/zoom-out`, `/tdd`, `/write-a-skill` |
 | [cursor/plugins — cursor-team-kit](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/thermo-nuclear-code-quality-review) | `/code-quality-review` |
+| [Andrej Karpathy](https://x.com/karpathy/status/2015883857489522876) · [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) | AGENTS.md baseline (`base` block) |
 
 ## Adding Skills
 
