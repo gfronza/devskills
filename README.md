@@ -121,6 +121,7 @@ Full walkthrough: [docs/gsd-workflow.md](docs/gsd-workflow.md)
 | Workflow | `/workflow` | Spec-to-ship orchestration using GSD |
 | Spec | `/spec` | Convert a description into a verifiable structured specification |
 | Code Quality Review | `/code-quality-review` | Strict maintainability audit: abstraction quality, file sprawl, spaghetti growth — hunts "code judo" simplifications |
+| Deslop | `/deslop` | Strip AI-generated slop from the branch diff — stray comments, defensive noise, `any`-casts, needless nesting |
 | Go Review | `/go-review` | Go code review: Tiger Style + idiomatic Go + security (`--no-tiger` to skip style) |
 | TS Review | `/ts-review` | TypeScript/Workers review: strict mode, React, Cloudflare (`--no-tiger` to skip style) |
 | Rust Review | `/rust-review` | Rust review: cargo geiger, unsafe counts, clippy, audit |
@@ -129,6 +130,7 @@ Full walkthrough: [docs/gsd-workflow.md](docs/gsd-workflow.md)
 | Handoff | `/handoff` | Compact the conversation into a handoff doc for a fresh agent |
 | Zoom Out | `/zoom-out` | Step up a layer — map modules, callers, and boundaries |
 | TDD | `/tdd` | Test-first, one vertical slice at a time; behavior over implementation |
+| Verify This | `/verify-this` | Prove a falsifiable claim with local baseline-vs-treatment evidence; returns VERIFIED / NOT VERIFIED / INCONCLUSIVE (no CI needed) |
 | Write a Skill | `/write-a-skill` | Author a new devskills command in the repo conventions |
 
 ## Project Setup
@@ -188,7 +190,7 @@ devskills ships its own prompt commands based on these upstream sources.
 | [Tiger Style](https://tigerstyle.dev/) | `/tiger-style`, all review skills |
 | [Caveman](https://github.com/juliusbrussee/caveman) | `/caveman-lite`, `/caveman-ultra` |
 | [mattpocock/skills](https://github.com/mattpocock/skills) | `/grill-me`, `/handoff`, `/zoom-out`, `/tdd`, `/write-a-skill` |
-| [cursor/plugins — cursor-team-kit](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/thermo-nuclear-code-quality-review) | `/code-quality-review` |
+| [cursor/plugins — cursor-team-kit](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills) | `/code-quality-review`, `/deslop`, `/verify-this` |
 | [Andrej Karpathy](https://x.com/karpathy/status/2015883857489522876) · [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) | AGENTS.md baseline (`base` block) |
 
 ## Adding Skills
