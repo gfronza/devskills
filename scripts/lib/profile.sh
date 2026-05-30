@@ -189,13 +189,16 @@ devskills_uninstall() {
   _dsk_remove_blocks "${dir}/AGENTS.md" "$dry" "AGENTS.md" base concise tooling language
   _dsk_remove_blocks "${dir}/CLAUDE.md" "$dry" "CLAUDE.md" import
 
+  # Legacy cleanup: older devskills versions recorded the profile in
+  # .devskills/language. The profile now lives in AGENTS.md, but sweep up any
+  # stray file/dir left behind by an earlier setup.
   if [ -f "${dir}/.devskills/language" ]; then
     if [ "$dry" = "1" ]; then
-      _dsk_log "[dry] would remove .devskills/language"
+      _dsk_log "[dry] would remove legacy .devskills/language"
     else
       rm -f "${dir}/.devskills/language"
       rmdir "${dir}/.devskills" 2>/dev/null || true
-      _dsk_log "removed .devskills/language"
+      _dsk_log "removed legacy .devskills/language"
     fi
   fi
 
@@ -238,12 +241,4 @@ devskills_apply() {
     _dsk_warn "Content now lives in AGENTS.md — remove the old inline block from CLAUDE.md."
   fi
 
-  # 7. Record state.
-  if [ "$dry" = "1" ]; then
-    _dsk_log "[dry] would write ${dir}/.devskills/language: ${lang:-(none)}"
-  else
-    mkdir -p "${dir}/.devskills"
-    echo "${lang}" > "${dir}/.devskills/language"
-    _dsk_log "wrote .devskills/language: ${lang:-(none)}"
-  fi
 }

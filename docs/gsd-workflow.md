@@ -89,7 +89,7 @@ Review PLAN.md before executing. Change anything you disagree with.
 
 GSD runs PLAN.md tasks using parallel sub-agents. Each sub-agent gets a fresh context window scoped to its task. The main session stays at 30-40% context utilization.
 
-Tiger Style is applied during execution. Language profile conventions (from your `.devskills/language` file) are applied automatically if set.
+Tiger Style is applied during execution. Language profile conventions (from the `<!-- profile: <lang> -->` block in your `AGENTS.md`) are applied automatically if set.
 
 ### Step 6: Verify
 
