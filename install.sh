@@ -11,6 +11,8 @@ warn() { printf '[devskills] WARN: %s\n' "$1" >&2; }
 # Shared GSD/RTK/tldt logic (depends on log/warn above and DRY_RUN below).
 # shellcheck source=scripts/lib/external-tools.sh
 source "${DEVSKILLS_DIR}/scripts/lib/external-tools.sh"
+# shellcheck source=scripts/lib/editors.sh
+source "${DEVSKILLS_DIR}/scripts/lib/editors.sh"
 
 # ------------------------------------------------------------
 # Arguments
@@ -81,6 +83,13 @@ if [ -z "$LANG_PROFILE" ] && { [ "$CONCISE" -eq 1 ] || [ "$HINTS" -eq 1 ]; }; th
   warn "--concise/--hints apply with --lang; nothing written to AGENTS.md. Use scripts/setup.sh for a baseline-only project."
 fi
 
+# Validate --lang up front, before any install side effects: a bad profile
+# should fail fast, not after GSD/RTK/tldt are already installed.
+if [ -n "$LANG_PROFILE" ] && [ ! -f "${DEVSKILLS_DIR}/prompts/language/${LANG_PROFILE}.md" ]; then
+  warn "No language profile for '${LANG_PROFILE}'. Available: go, typescript, javascript, rust"
+  exit 1
+fi
+
 # ------------------------------------------------------------
 # Helpers
 # ------------------------------------------------------------
@@ -89,7 +98,7 @@ install_file() {
   local src="$1"
   local dst="$2"
   if [ "$DRY_RUN" -eq 1 ]; then
-    log "DRY: would install $src -> $dst"
+    log "[dry] would install $src -> $dst"
     return
   fi
   mkdir -p "$(dirname "$dst")"
@@ -135,12 +144,6 @@ install_opencode() {
 
 install_lang_profile() {
   local lang="$1"
-
-  if [ -n "$lang" ] && [ ! -f "${DEVSKILLS_DIR}/prompts/language/${lang}.md" ]; then
-    warn "No language profile for '${lang}'. Available: go, typescript, javascript, rust"
-    return 1
-  fi
-
   log "Writing AGENTS.md baseline${lang:+ + ${lang} profile} to ${PWD}"
 
   # shellcheck source=scripts/lib/profile.sh
@@ -155,10 +158,7 @@ install_lang_profile() {
 install_cursor() {
   if [ -d "${PWD}/.cursor" ] || command -v cursor &>/dev/null; then
     log "Installing Cursor rules to ${PWD}/.cursor/rules/"
-    mkdir -p "${PWD}/.cursor/rules"
-    for f in "${DEVSKILLS_DIR}/cursor/rules/"*.mdc; do
-      install_file "$f" "${PWD}/.cursor/rules/$(basename "$f")"
-    done
+    devskills_install_cursor "$PWD" "$LANG_PROFILE"
   else
     warn "Cursor not detected in current project. Run from a project directory with .cursor/ or with Cursor installed."
   fi
@@ -171,9 +171,7 @@ install_cursor() {
 install_vscode() {
   if [ -d "${PWD}/.vscode" ] || command -v code &>/dev/null; then
     log "Installing VSCode Copilot instructions to ${PWD}/.github/copilot-instructions.md"
-    install_file \
-      "${DEVSKILLS_DIR}/vscode/copilot-instructions.md" \
-      "${PWD}/.github/copilot-instructions.md"
+    devskills_install_vscode "$PWD"
   else
     warn "VSCode not detected in current project."
   fi

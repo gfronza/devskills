@@ -8,19 +8,29 @@
 # The Linux download path and the old-hook purge are byte-identical either way,
 # so they live here once instead of being copy-pasted into both scripts.
 #
-# Contract: the sourcing script MUST define log() and warn(), and MAY set
-# DRY_RUN (0|1; defaults to 0). They are resolved dynamically at call time, so
-# each caller keeps its own log prefix.
+# Logging: install.sh and upgrade-deps.sh each define log()/warn() with their
+# own prefix and this lib uses theirs (resolved at call time). If sourced
+# without them, it falls back to a default prefix rather than failing on an
+# undefined function. DRY_RUN (0|1) is honored; defaults to 0.
 
 [ -n "${DEVSKILLS_EXTERNAL_LIB:-}" ] && return 0
 DEVSKILLS_EXTERNAL_LIB=1
+
+# Fall back to a default logger when the caller hasn't defined one, so the lib
+# never depends on a function existing in the sourcing scope.
+if ! declare -F log >/dev/null 2>&1; then
+  log() { printf '[devskills] %s\n' "$1"; }
+fi
+if ! declare -F warn >/dev/null 2>&1; then
+  warn() { printf '[devskills] WARN: %s\n' "$1" >&2; }
+fi
 
 # Run a command, or just describe it under --dry-run.
 #   $1 human-readable description  $2.. command + args
 run_or_dry() {
   local desc="$1"; shift
   if [ "${DRY_RUN:-0}" -eq 1 ]; then
-    log "DRY: would ${desc}"
+    log "[dry] would ${desc}"
     return 0
   fi
   "$@"
@@ -43,7 +53,7 @@ purge_old_gsd_hooks() {
       rm "$f"
       log "removed old GSD hook: $(basename "$f")"
     else
-      log "DRY: would remove old GSD hook: $f"
+      log "[dry] would remove old GSD hook: $f"
     fi
     found=1
   done
@@ -75,7 +85,7 @@ devskills_gsd() {
 # install and upgrade. Honors DRY_RUN.
 _rtk_linux_download() {
   if [ "${DRY_RUN:-0}" -eq 1 ]; then
-    log "DRY: would download and extract latest rtk-ai release to ~/.local/bin/rtk"
+    log "[dry] would download and extract latest rtk-ai release to ~/.local/bin/rtk"
     return 0
   fi
   local bin_dir="${HOME}/.local/bin"
@@ -128,7 +138,7 @@ devskills_rtk() {
     log "${verbing} RTK via Homebrew (macOS)..."
     if [ "$mode" = upgrade ]; then
       if [ "${DRY_RUN:-0}" -eq 1 ]; then
-        log "DRY: would run brew upgrade rtk-ai/tap/rtk"
+        log "[dry] would run brew upgrade rtk-ai/tap/rtk"
       else
         brew upgrade rtk-ai/tap/rtk || brew install rtk-ai/tap/rtk || warn "RTK brew upgrade failed."
       fi

@@ -58,6 +58,8 @@ done
 
 # shellcheck source=lib/profile.sh
 source "${DEVSKILLS_DIR}/scripts/lib/profile.sh"
+# shellcheck source=lib/editors.sh
+source "${DEVSKILLS_DIR}/scripts/lib/editors.sh"
 
 if [ "$DO_UNINSTALL" -eq 1 ]; then
   echo "Removing devskills from ${PWD}"
@@ -65,17 +67,6 @@ if [ "$DO_UNINSTALL" -eq 1 ]; then
   echo "Done."
   exit 0
 fi
-
-install() {
-  local src="$1" dst="$2"
-  if [ "$DRY_RUN" -eq 1 ]; then
-    echo "[dry] $src -> $dst"
-    return
-  fi
-  mkdir -p "$(dirname "$dst")"
-  cp "$src" "$dst"
-  echo "  wrote $dst"
-}
 
 # Validate the language profile up front (if one was requested).
 if [ -n "$LANG_PROFILE" ] && [ ! -f "${DEVSKILLS_DIR}/prompts/language/${LANG_PROFILE}.md" ]; then
@@ -90,22 +81,13 @@ devskills_apply "${DEVSKILLS_DIR}/prompts" "$PWD" "$DRY_RUN" "$LANG_PROFILE" "$D
 # Cursor rules
 if [ "$DO_CURSOR" -eq 1 ]; then
   echo "Cursor rules:"
-  mkdir -p "${PWD}/.cursor/rules"
-  install "${DEVSKILLS_DIR}/cursor/rules/tiger-style.mdc" "${PWD}/.cursor/rules/tiger-style.mdc"
-  case "$LANG_PROFILE" in
-    go)         install "${DEVSKILLS_DIR}/cursor/rules/go.mdc"         "${PWD}/.cursor/rules/go.mdc" ;;
-    typescript) install "${DEVSKILLS_DIR}/cursor/rules/typescript.mdc" "${PWD}/.cursor/rules/typescript.mdc" ;;
-    javascript) install "${DEVSKILLS_DIR}/cursor/rules/typescript.mdc" "${PWD}/.cursor/rules/typescript.mdc" ;;
-    rust)       install "${DEVSKILLS_DIR}/cursor/rules/rust.mdc"       "${PWD}/.cursor/rules/rust.mdc" ;;
-  esac
+  devskills_install_cursor "$PWD" "$LANG_PROFILE"
 fi
 
 # VSCode Copilot
 if [ "$DO_VSCODE" -eq 1 ]; then
   echo "VSCode Copilot:"
-  install \
-    "${DEVSKILLS_DIR}/vscode/copilot-instructions.md" \
-    "${PWD}/.github/copilot-instructions.md"
+  devskills_install_vscode "$PWD"
 fi
 
 echo ""
