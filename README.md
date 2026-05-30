@@ -115,6 +115,7 @@ Full walkthrough: [docs/gsd-workflow.md](docs/gsd-workflow.md)
 | TLDT | `/tldt` | Summarize context or file with extractive techniques, no LLM cost |
 | Workflow | `/workflow` | Spec-to-ship orchestration using GSD |
 | Spec | `/spec` | Convert a description into a verifiable structured specification |
+| Code Quality Review | `/code-quality-review` | Strict maintainability audit: abstraction quality, file sprawl, spaghetti growth — hunts "code judo" simplifications |
 | Go Review | `/go-review` | Go code review: Tiger Style + idiomatic Go + security (`--no-tiger` to skip style) |
 | TS Review | `/ts-review` | TypeScript/Workers review: strict mode, React, Cloudflare (`--no-tiger` to skip style) |
 | Rust Review | `/rust-review` | Rust review: cargo geiger, unsafe counts, clippy, audit |
@@ -165,6 +166,7 @@ devskills ships its own prompt commands based on these upstream sources.
 | [Tiger Style](https://tigerstyle.dev/) | `/tiger-style`, all review skills |
 | [Caveman](https://github.com/juliusbrussee/caveman) | `/caveman-lite`, `/caveman-ultra` |
 | [mattpocock/skills](https://github.com/mattpocock/skills) | `/grill-me`, `/handoff`, `/zoom-out`, `/tdd`, `/write-a-skill` |
+| [cursor/plugins — cursor-team-kit](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/thermo-nuclear-code-quality-review) | `/code-quality-review` |
 
 ## Adding Skills
 
