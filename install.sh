@@ -8,6 +8,10 @@ OPENCODE_COMMANDS_DIR="${HOME}/.opencode/commands"
 log() { printf '[devskills] %s\n' "$1"; }
 warn() { printf '[devskills] WARN: %s\n' "$1" >&2; }
 
+# Shared GSD/RTK/tldt logic (depends on log/warn above and DRY_RUN below).
+# shellcheck source=scripts/lib/external-tools.sh
+source "${DEVSKILLS_DIR}/scripts/lib/external-tools.sh"
+
 # ------------------------------------------------------------
 # Arguments
 # ------------------------------------------------------------
@@ -126,119 +130,6 @@ install_opencode() {
 }
 
 # ------------------------------------------------------------
-# External tools
-# ------------------------------------------------------------
-
-purge_old_gsd() {
-  local hooks_dir="${CLAUDE_CONFIG_DIR}/hooks"
-  [ -d "$hooks_dir" ] || return 0
-  local found=0
-  for f in "$hooks_dir"/*.sh "$hooks_dir"/*.js; do
-    [ -f "$f" ] || continue
-    if grep -q "gsd-hook-version:" "$f" 2>/dev/null; then
-      if [ "$DRY_RUN" -eq 0 ]; then
-        rm "$f"
-        log "removed old GSD hook: $(basename "$f")"
-      else
-        log "DRY: would remove old GSD hook: $f"
-      fi
-      found=1
-    fi
-  done
-  [ "$found" -eq 1 ] && log "Old GSD hooks removed. New GSD will reinstall fresh hooks."
-  return 0
-}
-
-install_gsd() {
-  purge_old_gsd
-  if command -v npx &>/dev/null; then
-    log "Installing GSD Redux — interactive, follow prompts..."
-    if [ "$DRY_RUN" -eq 0 ]; then
-      npx @opengsd/get-shit-done-redux@latest
-    else
-      log "DRY: would run npx @opengsd/get-shit-done-redux@latest"
-    fi
-  else
-    warn "npx not found. Install GSD manually: https://github.com/open-gsd/get-shit-done-redux"
-  fi
-}
-
-install_rtk() {
-  # Detect name collision: reachingforthejack/rtk installs a binary also called 'rtk'
-  # but has no 'gain' subcommand. Test for rtk-ai by probing 'rtk gain'.
-  if command -v rtk &>/dev/null; then
-    if rtk gain &>/dev/null; then
-      log "RTK (rtk-ai) already installed at $(command -v rtk). Skipping."
-      return 0
-    else
-      warn "A binary named 'rtk' exists at $(command -v rtk) but is NOT rtk-ai (token proxy)."
-      warn "This is likely reachingforthejack/rtk (Rust toolkit) — a known name collision."
-      warn "To fix:"
-      warn "  1. Remove the wrong binary:  cargo uninstall rtk"
-      warn "  2. Re-run install:            ./install.sh (rtk-ai will then install via brew)"
-      warn "Skipping RTK install to avoid shadowing."
-      return 1
-    fi
-  fi
-
-  # macOS: Homebrew is the preferred path — avoids cargo name collision
-  if [[ "$(uname)" == "Darwin" ]] && command -v brew &>/dev/null; then
-    log "Installing RTK via Homebrew (macOS)..."
-    if [ "$DRY_RUN" -eq 0 ]; then
-      brew install rtk-ai/tap/rtk || warn "RTK brew install failed. See: https://github.com/rtk-ai/rtk"
-    else
-      log "DRY: would run brew install rtk-ai/tap/rtk"
-    fi
-    return
-
-  # Linux: download prebuilt binary from GitHub releases (assets are .tar.gz)
-  elif [[ "$(uname)" == "Linux" ]]; then
-    log "Installing RTK via GitHub release (Linux)..."
-    if [ "$DRY_RUN" -eq 0 ]; then
-      local bin_dir="${HOME}/.local/bin"
-      mkdir -p "$bin_dir"
-      local arch target
-      arch="$(uname -m)"
-      case "$arch" in
-        x86_64)        target="x86_64-unknown-linux-musl" ;;
-        aarch64|arm64) target="aarch64-unknown-linux-gnu" ;;
-        *) warn "RTK: unsupported Linux arch '${arch}'. Install manually: https://github.com/rtk-ai/rtk"; return ;;
-      esac
-      local url="https://github.com/rtk-ai/rtk/releases/latest/download/rtk-${target}.tar.gz"
-      local tmp
-      tmp="$(mktemp -d)"
-      if curl -fsSL "$url" -o "${tmp}/rtk.tar.gz" && tar -xzf "${tmp}/rtk.tar.gz" -C "$bin_dir"; then
-        chmod +x "${bin_dir}/rtk"
-        log "RTK installed to ${bin_dir}/rtk"
-        log "Ensure ${bin_dir} is on your PATH."
-      else
-        warn "RTK download failed. Install manually: https://github.com/rtk-ai/rtk"
-      fi
-      rm -rf "$tmp"
-    else
-      log "DRY: would download and extract rtk-ai release to ~/.local/bin/rtk"
-    fi
-    return
-  fi
-
-  warn "RTK: unsupported OS or no package manager. Install manually: https://github.com/rtk-ai/rtk"
-}
-
-install_tldt() {
-  if command -v go &>/dev/null; then
-    log "Installing tldt..."
-    if [ "$DRY_RUN" -eq 0 ]; then
-      go install github.com/gleicon/tldt/cmd/tldt@latest
-      log "tldt installed to $(go env GOPATH)/bin/tldt"
-    else
-      log "DRY: would run go install github.com/gleicon/tldt/cmd/tldt@latest"
-    fi
-  else
-    warn "Go not found. Install tldt manually: https://github.com/gleicon/tldt"
-  fi
-}
-
-# ------------------------------------------------------------
 # Language profile
 # ------------------------------------------------------------
 
@@ -312,9 +203,9 @@ fi
 
 if [ "$SKIP_EXTERNAL" -eq 0 ]; then
   log "Installing external tools..."
-  install_gsd
-  install_rtk
-  install_tldt
+  devskills_gsd install
+  devskills_rtk install
+  devskills_tldt install
 else
   log "Skipping external tools (--skip-external)"
 fi
