@@ -90,6 +90,12 @@ Drive implementation test-first, one **vertical** slice at a time (one test → 
 - **Output:** per slice, the test then the implementation; reports which behaviors remain untested.
 - **Reach for it when:** building a feature you want anchored to real, refactor-survivable behavior.
 
+### `/test` — mode
+
+Pragmatic testing mode: as you build normally, ensure the code that matters gets well tested — without `/tdd`'s test-first ceremony. Tests by **risk, not rule** (core logic, edge cases, a regression test for every bug fixed; skips trivia), insists on behavior-through-the-interface tests that survive refactors, and refuses design-locking tests (mock-the-world, asserting internals, snapshot-everything). Coverage is a side effect, never the goal.
+
+- **Reach for it when:** doing normal implementation work you want kept honestly tested. The alongside-work sibling of `/tdd` (test-first); audit existing tests with `/test-quality-review`.
+
 ---
 
 ## Quality & cleanup
@@ -109,6 +115,14 @@ Strict documentation audit governed by one principle — **docs earn their lengt
 - **Args:** treated as scope (files, directories, globs); defaults to docs changed on the current branch. `--comments` also audits inline code comments (off by default).
 - **Output:** prioritized findings anchored to `file:line` with a suggested fix — accuracy/drift first, then dead links and wrong counts, missing docs, bloat-to-cut, clarity. Changes nothing.
 - **Reach for it when:** before a docs PR, after the code outgrew its README, or when the docs feel long and unread.
+
+### `/test-quality-review` — action
+
+Strict test-suite audit governed by one principle — **test what matters, and test it well — not coverage.** Hunts critical/core code that's under-tested (the bug waiting to ship) and tests that are bad (green but worthless, or design-locking and worse than nothing) with equal energy. Checks edge/failure-mode coverage on risky logic, behavior-vs-implementation quality, and flags tests coupled to internals for rewrite-or-delete. Explicitly rejects coverage-chasing.
+
+- **Args:** treated as scope (files, directories, globs); defaults to tests covering code changed on the current branch.
+- **Output:** prioritized findings anchored to `file:line` — untested critical code first, then missing edge cases, design-locking tests, weak tests, bloat-to-cut. Changes nothing.
+- **Reach for it when:** before merging logic-heavy work, or when a suite is green but you don't trust it. The audit counterpart to the `/test` mode and `/tdd`.
 
 ### `/deslop` — action
 
