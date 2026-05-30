@@ -11,21 +11,6 @@ Use-case walkthroughs for working with devskills — the `.project/` workflow pl
 
 ---
 
-## Modes stay on — and they stack
-
-A **mode** (`/tiger-style`, `/ui`, `/test`, `/caveman-lite` / `/caveman-ultra`) doesn't run and return — it changes *how* the agent works for the rest of the session. Modes **stack**: turn on as many as fit the work. Building a tested UI to a strict bar is three at once —
-
-```
-/tiger-style                # safety + explicitness bar
-/ui                         # component/state discipline + design craft
-/test                       # keep the core honestly tested as you build
-you → "implement the settings panel"
-```
-
-All three stay active through every `you →` instruction that follows. They persist until the session ends or you drop one ("stop UI mode"); `/caveman-lite` and `/caveman-ultra` are the ones with explicit off-switches ("normal mode"). Layer caveman on top of any build mode when prose is just overhead.
-
-Everything else — `/spec`, `/bug-review`, `/verify-this`, the `/project-*` family — is an **action**: runs once, returns a result. The recipes below bookend mode-driven building (the `you →` lines) with actions that decide, check, and persist.
-
 ## Project from scratch
 
 No code yet, so map comes last — there's nothing to map until something exists.
@@ -91,7 +76,7 @@ Run it on a cadence (end of a sprint, before a release). Branch-scope `/code-qua
 /project-plan               # add the feature's tasks to the roadmap
 /zoom-out                   # if it touches unfamiliar code
 /tiger-style                # engineering bar on
-/test                       # + keep the core tested as you build (modes stack)
+/test                       # + keep the core tested as you build (stacks with /tiger-style)
 you → "implement task 4: the retry policy with capped backoff"
 /deslop
 /code-quality-review        # branch-scoped, before review

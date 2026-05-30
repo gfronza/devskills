@@ -6,6 +6,21 @@ Everything here is **GSD-free**: it relies only on the commands, `git`, and `gh`
 
 ---
 
+## Modes stack — run several at once
+
+A **mode** (`/tiger-style`, `/ui`, `/test`, `/caveman-lite` / `/caveman-ultra`) doesn't do a job and return — it changes *how* the agent works for the rest of the session. Modes **compose**: turn on as many as fit the work. Building a tested UI to a strict bar is three at once —
+
+```
+/tiger-style             # safety + explicitness bar
+/ui                      # component/state discipline + design craft
+/test                    # keep the core honestly tested as you build
+   ...build it; all three stay active until the session ends...
+```
+
+To drop one mid-session, say so ("stop UI mode"); `/caveman-lite` and `/caveman-ultra` are the ones with explicit off-switches ("normal mode"). Everything else here — `/spec`, `/bug-review`, `/verify-this`, … — is an **action**: it runs once and returns a result. The recipes below stitch the two together.
+
+---
+
 ## Three ways to scope `/code-quality-review`
 
 `/code-quality-review` treats its argument as the review scope. Pick the scope to match the question you're asking.
@@ -100,12 +115,15 @@ Stitch the quality commands into one gate you run before marking a PR ready:
 
 ```
 /deslop                  # 1. remove slop introduced on the branch
-/code-quality-review     # 2. structural audit of the branch diff
-/go-review               # 3. language pass (or /ts-review, /rust-review)
-/verify-this  <claim>    # 4. prove the headline change actually works
+/code-quality-review     # 2. structure: is the diff making the codebase worse?
+/bug-review              # 3. correctness: real bugs, not style
+/security-review         # 4. exploitability — if it touches input, auth, secrets, or I/O
+/test-quality-review     # 5. is the risky logic actually covered, with good tests?
+/go-review               # 6. language pass (or /ts-review, /rust-review)
+/verify-this  <claim>    # 7. prove the headline change actually works
 ```
 
-Then write the PR description from what you learned and `gh pr ready`. Each step answers a different question — slop (noise), code-quality (structure), language review (idioms/security), verify (behavior) — so they don't overlap.
+Then write the PR description from what you learned and `gh pr ready`. Each step answers a *different* question — slop (noise), structure, correctness, exploitability, test coverage, language idioms, behavior — so they don't overlap. Not every PR needs all seven: reach for `/security-review` when it touches untrusted input, `/test-quality-review` when the logic is non-trivial. Run the questions that apply.
 
 ---
 
@@ -118,7 +136,7 @@ For small-to-medium work you don't need the full `.planning/` machinery. This lo
 /explore                 # 2. at a fork: lay out approaches → EXPLORE.md (--web to research)
 /grill-me --record       # 3. decide the open branches → DECISIONS.md
 /zoom-out                # 4. in unfamiliar code: map the area before changing it
-/tiger-style             # 5. turn on the engineering bar for the session
+/tiger-style             # 5. engineering bar on (stack /test to keep the core covered as you build)
    ...build it, driving the design yourself...
 /deslop                  # 6. clean the generated code
 /code-quality-review     # 7. audit structure before review
@@ -180,9 +198,14 @@ Two failure modes on long tasks: the context window fills, and prose burns token
 | Pressure-test a plan or PR approach | `/grill-me` |
 | Understand unfamiliar code before changing it | `/zoom-out` |
 | Build with real, refactor-proof tests | `/tdd` |
+| Keep the core tested as you work (mode) | `/test` |
 | Remove AI slop from a fresh branch | `/deslop` |
 | Judge structure / find simplifications | `/code-quality-review` |
+| Find real bugs (correctness) | `/bug-review` |
+| Audit security, language-agnostic | `/security-review` |
+| Check whether the right things are tested | `/test-quality-review` |
 | Review language idioms + security | `/go-review` · `/ts-review` · `/rust-review` |
+| Find why something fails, then fix it | `/debug` |
 | Prove a change actually works | `/verify-this` |
 | Hold the session to a strict bar | `/tiger-style` |
 | Pause / switch sessions cleanly | `/handoff` |
