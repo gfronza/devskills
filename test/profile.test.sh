@@ -124,6 +124,22 @@ test_uninstall_pure_devskills() {
   rm -rf "$ws"
 }
 
+test_uninstall_dry_run_deletes_nothing() {
+  echo "test: dry-run uninstall touches nothing (the deletion safety rail)"
+  reset_state
+  local ws; ws="$(workspace)"
+  devskills_apply "$PROMPTS" "$ws" 0 go 0 0 >/dev/null 2>&1
+  cp "$ws/AGENTS.md" "$ws/agents.snapshot"
+  cp "$ws/CLAUDE.md" "$ws/claude.snapshot"
+  devskills_uninstall "$ws" 1 >/dev/null 2>&1
+  assert_exists "$ws/AGENTS.md" "dry-run uninstall leaves AGENTS.md in place"
+  assert_exists "$ws/CLAUDE.md" "dry-run uninstall leaves CLAUDE.md in place"
+  assert_identical "$ws/AGENTS.md" "$ws/agents.snapshot" "dry-run uninstall does not modify AGENTS.md"
+  assert_identical "$ws/CLAUDE.md" "$ws/claude.snapshot" "dry-run uninstall does not modify CLAUDE.md"
+  assert_count "$(count_baks "$ws")" 0 "dry-run uninstall writes no backups"
+  rm -rf "$ws"
+}
+
 test_dry_run_writes_nothing() {
   echo "test: --dry-run writes nothing to disk"
   reset_state
@@ -154,6 +170,7 @@ test_option_stacking
 test_preserve_and_backup_once
 test_uninstall_preserves_user
 test_uninstall_pure_devskills
+test_uninstall_dry_run_deletes_nothing
 test_dry_run_writes_nothing
 test_manual_import_untouched
 echo
