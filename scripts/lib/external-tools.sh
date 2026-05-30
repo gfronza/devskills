@@ -122,22 +122,24 @@ _rtk_linux_download() {
     return 1
   fi
 
-  # Integrity: verify against the release's checksums.txt. A listed-but-wrong
-  # checksum is fatal; a missing file or an unlisted asset degrades to transport
-  # (HTTPS) trust with a warning. (Upstream ships one checksums.txt, not a
-  # per-asset .sha256.)
-  if curl -fsSL "${base_url}/checksums.txt" -o "${tmp}/checksums.txt" 2>/dev/null; then
-    local want got
-    want="$(_rtk_expected_sha256 "$(cat "${tmp}/checksums.txt")" "$asset")"
-    got="$(sha256sum "${tmp}/${asset}" | awk '{print $1}')"
-    if [ -z "$want" ]; then
-      warn "RTK: ${asset} not listed in checksums.txt; verifying transport only (HTTPS)."
-    elif [ "$want" != "$got" ]; then
-      warn "RTK checksum mismatch — refusing to install (expected ${want}, got ${got})."
-      return 1
-    fi
-  else
-    warn "RTK: no published checksums found; verifying transport only (HTTPS)."
+  # Integrity: verify against the release's checksums.txt. This binary is the
+  # only thing the script writes into $HOME, so refuse anything unverifiable —
+  # a missing checksums.txt, an unlisted asset, or a mismatch all abort.
+  # (Upstream ships one checksums.txt, not a per-asset .sha256.)
+  if ! curl -fsSL "${base_url}/checksums.txt" -o "${tmp}/checksums.txt" 2>/dev/null; then
+    warn "RTK: no published checksums.txt — refusing to install an unverifiable binary. Install manually: https://github.com/rtk-ai/rtk"
+    return 1
+  fi
+  local want got
+  want="$(_rtk_expected_sha256 "$(cat "${tmp}/checksums.txt")" "$asset")"
+  got="$(sha256sum "${tmp}/${asset}" | awk '{print $1}')"
+  if [ -z "$want" ]; then
+    warn "RTK: ${asset} not listed in checksums.txt — refusing to install an unverifiable binary. Install manually: https://github.com/rtk-ai/rtk"
+    return 1
+  fi
+  if [ "$want" != "$got" ]; then
+    warn "RTK checksum mismatch — refusing to install (expected ${want}, got ${got})."
+    return 1
   fi
 
   # Refuse any member that could escape the extract dir before extracting a

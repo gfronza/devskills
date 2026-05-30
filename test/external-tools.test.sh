@@ -73,7 +73,7 @@ test_expected_sha256_lookup() {
   body=$'aaa111  rtk-x86_64-unknown-linux-musl.tar.gz\nbbb222  rtk-aarch64-unknown-linux-gnu.tar.gz\nccc333  rtk-x86_64-apple-darwin.tar.gz'
   assert_eq "$(_rtk_expected_sha256 "$body" "rtk-x86_64-unknown-linux-musl.tar.gz")" "aaa111" "first asset's hash"
   assert_eq "$(_rtk_expected_sha256 "$body" "rtk-aarch64-unknown-linux-gnu.tar.gz")" "bbb222" "middle asset's hash"
-  assert_eq "$(_rtk_expected_sha256 "$body" "rtk-not-a-real-asset.tar.gz")"          ""       "unlisted asset yields empty (degrades, never false-matches)"
+  assert_eq "$(_rtk_expected_sha256 "$body" "rtk-not-a-real-asset.tar.gz")"          ""       "unlisted asset yields empty (no false match; caller refuses to install)"
   assert_eq "$(_rtk_expected_sha256 ""     "rtk-x86_64-unknown-linux-musl.tar.gz")"  ""       "empty checksums body yields empty"
   # Exactness: a name that is a substring of a listed entry must not match.
   assert_eq "$(_rtk_expected_sha256 "$body" "linux-musl.tar.gz")"                    ""       "substring of a listed name does not match"

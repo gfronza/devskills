@@ -106,6 +106,27 @@ install_file() {
   log "installed $dst"
 }
 
+# Commands removed or renamed in past releases. install only ever copies, so
+# without this the old name lingers next to its replacement forever (e.g. after
+# update.sh). Remove the known stale files from a target commands dir; only
+# touches names devskills itself shipped, never user-authored commands.
+#   frontend.md     -> ui.md
+#   write-a-skill.md -> write-a-command.md
+RENAMED_COMMANDS=(frontend.md write-a-skill.md)
+
+purge_renamed_commands() {
+  local dir="$1" name
+  for name in "${RENAMED_COMMANDS[@]}"; do
+    [ -f "${dir}/${name}" ] || continue
+    if [ "$DRY_RUN" -eq 1 ]; then
+      log "[dry] would remove renamed command ${dir}/${name}"
+    else
+      rm -f "${dir}/${name}"
+      log "removed renamed command ${dir}/${name}"
+    fi
+  done
+}
+
 # ------------------------------------------------------------
 # Claude Code skills
 # ------------------------------------------------------------
@@ -117,6 +138,7 @@ install_claude() {
     for f in "${DEVSKILLS_DIR}/claude/commands/"*.md; do
       install_file "$f" "${CLAUDE_COMMANDS_DIR}/$(basename "$f")"
     done
+    purge_renamed_commands "${CLAUDE_COMMANDS_DIR}"
   else
     warn "Claude Code not detected. Skipping. Install from https://claude.ai/code"
   fi
@@ -133,6 +155,7 @@ install_opencode() {
     for f in "${DEVSKILLS_DIR}/opencode/commands/"*.md; do
       install_file "$f" "${OPENCODE_COMMANDS_DIR}/$(basename "$f")"
     done
+    purge_renamed_commands "${OPENCODE_COMMANDS_DIR}"
   else
     warn "OpenCode not detected. Skipping."
   fi

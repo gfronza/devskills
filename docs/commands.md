@@ -136,6 +136,8 @@ Strip AI-generated slop from the branch and align it with the surrounding code. 
 
 ## Reviews
 
+The review commands are a **layered gate, not competing alternatives** — cheapest and narrowest first, deepest last: `/deslop` (noise) → `/bug-review` (correctness) → `/security-review` (exploitability) → the language review (idioms) → `/code-quality-review` (structure). Each answers a different question, so running several on the same code isn't redundant. The full pre-PR sequence is in [recipes.md](recipes.md#a-pre-pr-quality-gate).
+
 ### `/bug-review` — action
 
 Language-agnostic **correctness** audit — the bug-hunting pass. Asks one thing: *will this misbehave at runtime?* Hunts logic errors, null/absent-value derefs, swallowed errors and half-done failure paths, resource leaks, races (TOCTOU, lock ordering), boundary/overflow mistakes, and contract misuse. Distinct from `/code-quality-review` (which is maintainability, not bugs) — the same split the harness draws between cleanup and correctness.
