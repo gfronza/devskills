@@ -83,7 +83,7 @@ UI mode, framework-agnostic (React/Svelte/Vue/Solid/vanilla, any runtime). Two h
 
 ## Test & build
 
-### `/ds-tdd` — action/mode
+### `/ds-tdd-mode` — mode
 
 Drive implementation test-first, one **vertical** slice at a time (one test → minimal implementation → repeat). Refuses horizontal slicing (all tests up front). Tests exercise observable behavior through the public interface, never internals.
 
@@ -92,9 +92,9 @@ Drive implementation test-first, one **vertical** slice at a time (one test → 
 
 ### `/ds-test-mode` — mode
 
-Pragmatic testing mode: as you build normally, ensure the code that matters gets well tested — without `/ds-tdd`'s test-first ceremony. Tests by **risk, not rule** (core logic, edge cases, a regression test for every bug fixed; skips trivia), insists on behavior-through-the-interface tests that survive refactors, and refuses design-locking tests (mock-the-world, asserting internals, snapshot-everything). Coverage is a side effect, never the goal.
+Pragmatic testing mode: as you build normally, ensure the code that matters gets well tested — without `/ds-tdd-mode`'s test-first ceremony. Tests by **risk, not rule** (core logic, edge cases, a regression test for every bug fixed; skips trivia), insists on behavior-through-the-interface tests that survive refactors, and refuses design-locking tests (mock-the-world, asserting internals, snapshot-everything). Coverage is a side effect, never the goal.
 
-- **Reach for it when:** doing normal implementation work you want kept honestly tested. The alongside-work sibling of `/ds-tdd` (test-first); audit existing tests with `/ds-test-quality-review`.
+- **Reach for it when:** doing normal implementation work you want kept honestly tested. The alongside-work sibling of `/ds-tdd-mode` (test-first); audit existing tests with `/ds-test-quality-review`.
 
 ---
 
@@ -122,7 +122,7 @@ Strict test-suite audit governed by one principle — **test what matters, and t
 
 - **Args:** treated as scope (files, directories, globs); defaults to tests covering code changed on the current branch.
 - **Output:** prioritized findings anchored to `file:line` — untested critical code first, then missing edge cases, design-locking tests, weak tests, bloat-to-cut. Changes nothing.
-- **Reach for it when:** before merging logic-heavy work, or when a suite is green but you don't trust it. The audit counterpart to the `/ds-test-mode` mode and `/ds-tdd`.
+- **Reach for it when:** before merging logic-heavy work, or when a suite is green but you don't trust it. The audit counterpart to the `/ds-test-mode` mode and `/ds-tdd-mode`.
 
 ### `/ds-ui-quality-review` — action
 

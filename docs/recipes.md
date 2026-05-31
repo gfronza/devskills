@@ -197,7 +197,7 @@ Two failure modes on long tasks: the context window fills, and prose burns token
 | Turn an idea into a verifiable contract | `/ds-spec` |
 | Pressure-test a plan or PR approach | `/ds-grill-me` |
 | Understand unfamiliar code before changing it | `/ds-zoom-out` |
-| Build with real, refactor-proof tests | `/ds-tdd` |
+| Build with real, refactor-proof tests | `/ds-tdd-mode` |
 | Keep the core tested as you work (mode) | `/ds-test-mode` |
 | Remove AI slop from a fresh branch | `/ds-deslop` |
 | Judge structure / find simplifications | `/ds-code-quality-review` |

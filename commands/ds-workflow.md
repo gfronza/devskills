@@ -51,7 +51,7 @@ With GSD (`.planning/` present):
 ```
 `Insight ─────────────────────────────────────`
 /ds-tiger-style-mode — safety + explicitness bar (already active)
-/ds-tdd — drive implementation with tests
+/ds-tdd-mode — drive implementation with tests
 /ds-test-mode — keep the core tested as you build (mode, stays on)
 /ds-ui-mode — component/state discipline + design craft (UI work)
 `─────────────────────────────────────────────`

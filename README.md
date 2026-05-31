@@ -169,7 +169,7 @@ you both its origin and its kind: `/ds-tiger-style-mode` is a mode you toggle,
 | Grill Me | `/ds-grill-me` | Relentless plan interview (`--record` logs to DECISIONS.md) |
 | Handoff | `/ds-handoff` | Compact the conversation into a handoff doc |
 | Zoom Out | `/ds-zoom-out` | Step up a layer — map modules, callers, boundaries |
-| TDD | `/ds-tdd` | Test-first, one vertical slice at a time |
+| TDD | `/ds-tdd-mode` | Test-first, one vertical slice at a time |
 | Test | `/ds-test-mode` | Pragmatic testing mode — test by risk, not coverage |
 | Test Quality Review | `/ds-test-quality-review` | Strict test audit: is critical code well tested? |
 | Debug | `/ds-debug` | Root-cause a failure with the scientific method |
@@ -238,7 +238,7 @@ devskills ships its own prompt commands based on these upstream sources.
 |-----------|---------|
 | [Tiger Style](https://tigerstyle.dev/) | `/ds-tiger-style-mode`, all review skills |
 | [Caveman](https://github.com/juliusbrussee/caveman) | `/ds-caveman-lite-mode`, `/ds-caveman-ultra-mode` |
-| [mattpocock/skills](https://github.com/mattpocock/skills) | `/ds-grill-me`, `/ds-handoff`, `/ds-zoom-out`, `/ds-tdd`, `/ds-write-a-command` |
+| [mattpocock/skills](https://github.com/mattpocock/skills) | `/ds-grill-me`, `/ds-handoff`, `/ds-zoom-out`, `/ds-tdd-mode`, `/ds-write-a-command` |
 | [cursor/plugins — cursor-team-kit](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills) | `/ds-code-quality-review`, `/ds-deslop`, `/ds-verify-this` |
 | [Andrej Karpathy](https://x.com/karpathy/status/2015883857489522876) · [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) | AGENTS.md baseline (`base` block) |
 
