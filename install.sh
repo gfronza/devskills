@@ -24,6 +24,7 @@ SKIP_CURSOR=0
 SKIP_VSCODE=0
 CONCISE=0
 HINTS=0
+PHASES=0
 DRY_RUN=0
 
 for arg in "$@"; do
@@ -35,9 +36,10 @@ for arg in "$@"; do
     --skip-vscode) SKIP_VSCODE=1 ;;
     --concise) CONCISE=1 ;;
     --hints) HINTS=1 ;;
+    --phases) PHASES=1 ;;
     --dry-run) DRY_RUN=1 ;;
     --help|-h)
-      echo "Usage: install.sh [--lang=go|typescript|javascript|rust] [--claude-dir=PATH] [--skip-external] [--skip-cursor] [--skip-vscode] [--concise] [--hints] [--dry-run]"
+      echo "Usage: install.sh [--lang=go|typescript|javascript|rust] [--claude-dir=PATH] [--skip-external] [--skip-cursor] [--skip-vscode] [--concise] [--hints] [--phases] [--dry-run]"
       echo ""
       echo "  --lang=<profile>    Language profile to write: go|typescript|javascript|rust"
       echo "  --claude-dir=PATH   Claude config dir (default: \$CLAUDE_CONFIG_DIR or \$HOME/.claude)"
@@ -46,6 +48,7 @@ for arg in "$@"; do
       echo "  --skip-vscode       Skip VSCode Copilot instructions install into the current project"
       echo "  --concise           Add a terse-response directive to AGENTS.md (with --lang)"
       echo "  --hints             Add a devskills tooling reference to AGENTS.md (with --lang)"
+      echo "  --phases            Add phase-aware Insight suggestions to AGENTS.md (with --lang)"
       echo "  --dry-run           Show what would happen, write nothing"
       exit 0
       ;;
@@ -135,7 +138,7 @@ install_claude() {
   if command -v claude &>/dev/null || [ -d "${CLAUDE_CONFIG_DIR}" ]; then
     log "Installing Claude Code commands to ${CLAUDE_COMMANDS_DIR}"
     mkdir -p "${CLAUDE_COMMANDS_DIR}"
-    for f in "${DEVSKILLS_DIR}/claude/commands/"*.md; do
+    for f in "${DEVSKILLS_DIR}/commands/"*.md; do
       install_file "$f" "${CLAUDE_COMMANDS_DIR}/$(basename "$f")"
     done
     purge_renamed_commands "${CLAUDE_COMMANDS_DIR}"
@@ -152,7 +155,7 @@ install_opencode() {
   if command -v opencode &>/dev/null || [ -d "${HOME}/.opencode" ]; then
     log "Installing OpenCode commands to ${OPENCODE_COMMANDS_DIR}"
     mkdir -p "${OPENCODE_COMMANDS_DIR}"
-    for f in "${DEVSKILLS_DIR}/opencode/commands/"*.md; do
+    for f in "${DEVSKILLS_DIR}/commands/"*.md; do
       install_file "$f" "${OPENCODE_COMMANDS_DIR}/$(basename "$f")"
     done
     purge_renamed_commands "${OPENCODE_COMMANDS_DIR}"
@@ -171,7 +174,7 @@ install_lang_profile() {
 
   # shellcheck source=scripts/lib/profile.sh
   source "${DEVSKILLS_DIR}/scripts/lib/profile.sh"
-  devskills_apply "${DEVSKILLS_DIR}/prompts" "$PWD" "$DRY_RUN" "$lang" "$CONCISE" "$HINTS"
+  devskills_apply "${DEVSKILLS_DIR}/prompts" "$PWD" "$DRY_RUN" "$lang" "$CONCISE" "$HINTS" "$PHASES"
 }
 
 # ------------------------------------------------------------

@@ -20,6 +20,7 @@ Profiles (optional):
 Options:
   --concise         Add a terse-response directive to AGENTS.md
   --hints           Add a devskills tooling reference to AGENTS.md
+  --phases          Add phase-aware Insight suggestions to AGENTS.md
   --cursor          Install Cursor rules into current project
   --vscode          Install VSCode Copilot instructions into current project
   --uninstall       Remove devskills blocks from AGENTS.md/CLAUDE.md and the marker
@@ -28,7 +29,7 @@ Options:
 Example:
   setup.sh                              # baseline only
   setup.sh --lang=go --cursor
-  setup.sh --lang=typescript --concise --hints
+  setup.sh --lang=typescript --concise --hints --phases
   setup.sh --uninstall                  # back out devskills changes
 EOF
 }
@@ -38,6 +39,7 @@ DO_CURSOR=0
 DO_VSCODE=0
 DO_CONCISE=0
 DO_HINTS=0
+DO_PHASES=0
 DO_UNINSTALL=0
 DRY_RUN=0
 
@@ -49,6 +51,7 @@ for arg in "$@"; do
     --vscode) DO_VSCODE=1 ;;
     --concise) DO_CONCISE=1 ;;
     --hints) DO_HINTS=1 ;;
+    --phases) DO_PHASES=1 ;;
     --uninstall) DO_UNINSTALL=1 ;;
     --dry-run) DRY_RUN=1 ;;
     --help|-h) usage; exit 0 ;;
@@ -76,7 +79,7 @@ fi
 
 # AGENTS.md baseline (+ optional layers); CLAUDE.md imports it via @AGENTS.md.
 echo "devskills baseline${LANG_PROFILE:+ + ${LANG_PROFILE} profile}"
-devskills_apply "${DEVSKILLS_DIR}/prompts" "$PWD" "$DRY_RUN" "$LANG_PROFILE" "$DO_CONCISE" "$DO_HINTS"
+devskills_apply "${DEVSKILLS_DIR}/prompts" "$PWD" "$DRY_RUN" "$LANG_PROFILE" "$DO_CONCISE" "$DO_HINTS" "$DO_PHASES"
 
 # Cursor rules
 if [ "$DO_CURSOR" -eq 1 ]; then

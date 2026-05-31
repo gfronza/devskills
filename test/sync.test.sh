@@ -1,16 +1,25 @@
 #!/usr/bin/env bash
-# sync.test.sh — the claude/ and opencode/ command trees must stay byte-identical.
-# Every command ships to both, and /write-a-command writes the two copies by hand;
-# nothing else guards the invariant, so a stray edit to one tree would drift
-# silently. This pins it: `npm test` fails the moment they diverge.
+# sync.test.sh — commands/ is the single source; all .md files must be non-empty.
 set -uo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CMDS="${REPO}/commands"
 
-echo "claude/ ↔ opencode/ command parity"
-if diff -rq "${REPO}/claude/commands" "${REPO}/opencode/commands"; then
-  echo "  ok   command trees are byte-identical"
+echo "commands/ source integrity"
+
+if [ ! -d "$CMDS" ]; then
+  echo "  FAIL commands/ directory missing"
+  exit 1
+fi
+
+fail=0
+for f in "${CMDS}"/*.md; do
+  [ -s "$f" ] || { echo "  FAIL empty: $(basename "$f")"; fail=1; }
+done
+
+if [ "$fail" -eq 0 ]; then
+  count=$(ls "${CMDS}"/*.md 2>/dev/null | wc -l | tr -d ' ')
+  echo "  ok   ${count} commands found, all non-empty"
   exit 0
 fi
-echo "  FAIL claude/commands and opencode/commands diverge (see diff above)"
 exit 1

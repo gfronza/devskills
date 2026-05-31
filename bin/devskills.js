@@ -45,6 +45,7 @@ Options (pass through to install/setup):
   --vscode             Install VSCode Copilot instructions (setup)
   --concise            Add a terse-response directive to AGENTS.md (setup/install)
   --hints              Add a devskills tooling reference to AGENTS.md (setup/install)
+  --phases             Add phase-aware Insight suggestions to AGENTS.md (setup/install)
   --uninstall          Remove devskills blocks from AGENTS.md/CLAUDE.md (setup)
   --dry-run            Show what would happen without writing files
 
@@ -59,11 +60,11 @@ Examples:
 }
 
 function list() {
-  const claudeDir = path.join(DEVSKILLS_DIR, "claude", "commands")
+  const commandsDir = path.join(DEVSKILLS_DIR, "commands")
   const langDir = path.join(DEVSKILLS_DIR, "prompts", "language")
 
-  console.log("\nSkills (Claude Code / OpenCode commands — identical sets):")
-  for (const f of fs.readdirSync(claudeDir).sort()) {
+  console.log("\nSkills (Claude Code / OpenCode commands):")
+  for (const f of fs.readdirSync(commandsDir).sort()) {
     if (f.endsWith(".md")) {
       console.log(`  /${f.replace(".md", "")}`)
     }

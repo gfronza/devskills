@@ -211,4 +211,5 @@ Two failure modes on long tasks: the context window fills, and prose burns token
 | Pause / switch sessions cleanly | `/handoff` |
 | Compress a long source doc | `/tldt` |
 | Save tokens on a long session | `/caveman-lite` · `/caveman-ultra` |
+| Run the full pre-PR review pipeline with fixes between passes | `/quality-gate` |
 | Turn a repeated manual flow into a command | `/write-a-command` |
