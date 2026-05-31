@@ -134,6 +134,22 @@ Strip AI-generated slop from the branch and align it with the surrounding code. 
 
 ---
 
+## Quality Gate
+
+### `/quality-gate` — mode
+
+Six-pass review pipeline for a feature branch or scoped path. Run in order; implement accepted findings between passes before proceeding.
+
+Pipeline: `/deslop` → `/test-quality-review` → `/security-review` → `/bug-review` → `/code-quality-review` → `/doc-quality-review`
+
+After each pass: shows findings for that pass, asks "accept all / reject all / skip N", implements accepted ones, then moves to the next pass. Reports a one-paragraph summary at the end.
+
+- **Args:** optional path scope (applies to every pass). None → branch diff.
+- **Toggle:** `/quality-gate` to activate, `/quality-gate off` or "stop quality gate" to deactivate.
+- **Reach for it when:** finishing a feature branch before opening a PR; each pass answers a different question so running all six is not redundant.
+
+---
+
 ## Reviews
 
 The review commands are a **layered gate, not competing alternatives** — cheapest and narrowest first, deepest last: `/deslop` (noise) → `/bug-review` (correctness) → `/security-review` (exploitability) → the language review (idioms) → `/code-quality-review` (structure). Each answers a different question, so running several on the same code isn't redundant. The full pre-PR sequence is in [recipes.md](recipes.md#a-pre-pr-quality-gate).
@@ -228,6 +244,6 @@ Compress the agent's prose to save tokens. **Lite** drops articles/filler/hedgin
 
 ### `/write-a-command` — action
 
-Author a new devskills command in the repo's conventions, written byte-identical to both `claude/commands/` and `opencode/commands/`, registered in the README table and `docs/commands.md`. Knows both archetypes (action vs. mode) and enforces the one-job-per-command rule.
+Author a new devskills command in the repo's conventions, written to `commands/` (install.sh copies it to Claude Code and OpenCode), registered in the README table and `docs/commands.md`. Knows both archetypes (action vs. mode) and enforces the one-job-per-command rule.
 
 - **Reach for it when:** a workflow you repeat by hand should become a command.

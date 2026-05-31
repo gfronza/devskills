@@ -158,6 +158,7 @@ These are scribes, not pilots: they record what you decide, never steer architec
 | Test Quality Review | `/test-quality-review` | Strict test audit: is critical code well tested? |
 | Debug | `/debug` | Root-cause a failure with the scientific method |
 | Verify This | `/verify-this` | Prove a falsifiable claim with local before/after evidence |
+| Quality Gate | `/quality-gate` | Six-pass review pipeline (deslop → test → security → bug → quality → docs), implement fixes between passes, toggleable mode |
 | Write a Command | `/write-a-command` | Author a new devskills command in repo conventions |
 
 Full per-command reference: [docs/commands.md](docs/commands.md). Worked, GSD-free workflows and examples: [docs/recipes.md](docs/recipes.md). Extended `/grill-me` playbook: [docs/grill-me.md](docs/grill-me.md). Tiger Style principles: [docs/tiger-style.md](docs/tiger-style.md).
@@ -226,7 +227,7 @@ devskills ships its own prompt commands based on these upstream sources.
 
 ## Adding Skills
 
-Drop a `.md` file into `claude/commands/`. The filename becomes the command name. The file content is the system prompt injected when the command runs. Copy to `opencode/commands/` for OpenCode parity.
+Drop a `.md` file into `commands/`. The filename becomes the command name. The file content is the system prompt injected when the command runs. `install.sh` copies it to both `~/.claude/commands/` and `~/.opencode/commands/`.
 
 For Cursor, drop a `.mdc` file into `cursor/rules/`. Use YAML frontmatter:
 - `alwaysApply: true` — inject regardless of open file

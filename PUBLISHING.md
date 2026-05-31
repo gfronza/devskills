@@ -108,7 +108,7 @@ tar tzf devskills-*.tgz
 
 ### After adding a new skill file
 
-1. Copy the file to `opencode/commands/` if it belongs there.
+1. Add the file to `commands/` — install.sh copies it to both Claude Code and OpenCode destinations.
 2. Update `README.md` skills table.
 3. Bump version: `npm version patch`.
 4. `npm publish`.

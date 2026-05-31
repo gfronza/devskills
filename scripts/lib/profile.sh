@@ -8,6 +8,7 @@
 #   base      always — universal engineering principles
 #   concise   optional — terse-response directive (--concise)
 #   tooling   optional — devskills tooling reference (--hints)
+#   phases    optional — phase-aware Insight suggestions (--phases)
 #   language  optional — per-language profile (--lang=<x>)
 #
 # Behavior:
@@ -186,7 +187,7 @@ _dsk_remove_blocks() {
 #   $1 target dir  $2 dry-run (1|0)
 devskills_uninstall() {
   local dir="$1" dry="$2"
-  _dsk_remove_blocks "${dir}/AGENTS.md" "$dry" "AGENTS.md" base concise tooling language
+  _dsk_remove_blocks "${dir}/AGENTS.md" "$dry" "AGENTS.md" base concise tooling phases language
   _dsk_remove_blocks "${dir}/CLAUDE.md" "$dry" "CLAUDE.md" import
 
   # Legacy cleanup: older devskills versions recorded the profile in
@@ -209,9 +210,9 @@ devskills_uninstall() {
 
 # Apply the devskills baseline (and optional layers) to a project.
 #   $1 prompts dir  $2 target dir  $3 dry-run (1|0)
-#   $4 lang ("" for none)  $5 concise (1|0)  $6 hints (1|0)
+#   $4 lang ("" for none)  $5 concise (1|0)  $6 hints (1|0)  $7 phases (1|0)
 devskills_apply() {
-  local pdir="$1" dir="$2" dry="$3" lang="$4" concise="$5" hints="$6"
+  local pdir="$1" dir="$2" dry="$3" lang="$4" concise="$5" hints="$6" phases="${7:-0}"
 
   # 1. Base engineering principles (always).
   _dsk_inject base "${pdir}/system/agents-base.md" "$dir" "$dry"
@@ -226,7 +227,12 @@ devskills_apply() {
     _dsk_inject tooling "${pdir}/system/tooling.md" "$dir" "$dry"
   fi
 
-  # 4. Language profile (optional).
+  # 4. Phase-aware Insight suggestions (optional).
+  if [ "$phases" = "1" ]; then
+    _dsk_inject phases "${pdir}/system/phase-hints.md" "$dir" "$dry"
+  fi
+
+  # 5. Language profile (optional).
   if [ -n "$lang" ]; then
     _dsk_inject language "${pdir}/language/${lang}.md" "$dir" "$dry" \
       "<!-- profile: ${lang} — managed by devskills; edits between these markers are overwritten -->"

@@ -1,6 +1,6 @@
 Author a new devskills command.
 
-When invoked, help the user create a command file that fits the devskills conventions, then place it in both command directories.
+When invoked, help the user create a command file that fits the devskills conventions, then place it in `commands/`.
 
 ## devskills command format
 
@@ -18,7 +18,7 @@ No companion files. If a command needs more than one file, it is doing too much 
 
 1. Gather the requirement: what task the command automates, and when the user would invoke it.
 2. Draft the command file following the format above. Keep it focused — one job per command.
-3. Write it to BOTH `claude/commands/<name>.md` and `opencode/commands/<name>.md`; the two must stay byte-identical.
+3. Write it to `commands/<name>.md` — install.sh copies it to both Claude Code and OpenCode.
 4. Register it: add a row to the README "Skills" table and an entry to `docs/commands.md`.
 5. Show the draft to the user for review before finalizing.
 
@@ -30,4 +30,4 @@ No companion files. If a command needs more than one file, it is doing too much 
 
 ## Output
 
-The new command file (both copies) and the registration edits (README + `docs/commands.md`), shown for review.
+The new command file and the registration edits (README + `docs/commands.md`), shown for review.
