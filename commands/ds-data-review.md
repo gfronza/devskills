@@ -7,6 +7,7 @@ When invoked, audit the code in scope against one question: **is the data correc
 - Treat positional args as scope (files, directories, globs — including schema and migration files). With no scope, review the code changed on the current branch.
 - Freeform scope ("the orders schema", "the reporting queries") is interpreted reasonably.
 - State the store/engine if you know it (Postgres, MySQL, SQLite, Mongo, DynamoDB…) — isolation defaults and SQL dialects differ. Otherwise infer from config/driver and **state the assumption**.
+- `--pipelines` extends the review with a sixth area — data-pipeline / ETL correctness (idempotency, replay/backfill safety, late & out-of-order data, dedup, schema drift). **Off by default**: the default review covers the operational store. With the flag on, it's the after-the-fact audit counterpart to the `/ds-data-mode` build mode (mode shapes the pipeline build; this audits the built pipeline code).
 
 ## What to check
 
@@ -20,6 +21,8 @@ When invoked, audit the code in scope against one question: **is the data correc
 
 **5. Migration safety.** Backward-incompatible schema changes deployed against running code (drop/rename a column the old version still reads); locking DDL on large tables (add-column-with-volatile-default, non-concurrent index build, type change that rewrites the table); non-idempotent migrations; backfills that are wrong, unbatched, or racy against live writes; missing or untested rollback path.
 
+**6. Pipeline & ETL correctness (`--pipelines` only).** The after-the-fact audit of pipeline code — the mirror of `/ds-data-mode`'s build-time constraints. Non-idempotent writes (blind append where re-running double-writes, instead of upsert/merge on a key); transform logic that depends on wall-clock, randomness, or arrival order. Processing-time windowing where event time is needed (late/out-of-order data silently dropped or miscounted; no watermark/cutoff); no dedup under at-least-once delivery; bad records that crash the batch instead of being quarantined; schema drift silently coerced or dropped instead of failing loudly at a pinned contract. Backfills that double-count (not replayable); no time-partitioning to bound reprocessing; no checkpoint to resume from; destructive overwrite with no recovery path; a delivery guarantee (at-least-once vs exactly-once) the sink doesn't actually satisfy. Missing boundary assertions (counts, ranges, referential, reconciliation) that let silently-wrong data publish.
+
 ## Output
 
 A prioritized findings list, ordered by severity (likelihood × impact):
@@ -28,6 +31,8 @@ A prioritized findings list, ordered by severity (likelihood × impact):
 2. **Wrong results** — queries that return incorrect, duplicated, or missing data under normal use.
 3. **Integrity gap** — an invariant the app assumes but the store doesn't enforce (breakable by a race or a second writer).
 4. **Hardening** — a constraint or type that would prevent a class of future data bug, not yet causing one.
+
+With `--pipelines`, pipeline/ETL findings join the same ladder — a backfill that double-counts or an overwrite with no recovery path is *Critical*; a missing boundary assertion that lets silently-wrong data publish is *wrong-results* or *integrity-gap*.
 
 For each finding:
 

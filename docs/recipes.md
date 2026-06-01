@@ -224,10 +224,10 @@ Because `/ds-ui-mode` encodes design constraints (type scale, spacing tokens, vi
 /ds-test-mode                    # cover the transforms as you build (stacks)
    ...build it: pure transforms, upsert-on-key writes, event-time windowing, boundary assertions...
 /ds-verify-this "re-running yesterday's window produces identical row counts and totals — no double-counting"
-/ds-data-review                  # audit the operational store the pipeline writes to
+/ds-data-review --pipelines      # audit the pipeline code + the store it writes to
 ```
 
-The mode shapes how the pipeline gets *built*; `/ds-data-review` audits the *store* it writes to (schema, constraints, transactions, migrations). They're complements, not duplicates — run the mode while building, the review before merging.
+The mode shapes how the pipeline gets *built*; `/ds-data-review --pipelines` audits the built pipeline code (idempotency, replay-safety, late-data handling, schema-drift contracts), and plain `/ds-data-review` audits the *store* it writes to (schema, constraints, transactions, migrations). They're complements, not duplicates — run the mode while building, the review before merging.
 
 ---
 

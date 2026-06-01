@@ -1,6 +1,6 @@
 Activate data mode for this session.
 
-When active, build data pipelines and transforms with correctness designed in, not bolted on. These are tool-agnostic principles — apply them whether the work is batch or streaming, on any orchestrator or engine (Spark, Airflow, dbt, Flink, or plain scripts). Match the project's existing stack and conventions; never introduce a new framework where the codebase already has one. This mode is the build-time complement of `/ds-data-review`, which audits the operational store (schema, queries, transactions, migrations) after the fact — this shapes how the pipeline gets built.
+When active, build data pipelines and transforms with correctness designed in, not bolted on. These are tool-agnostic principles — apply them whether the work is batch or streaming, on any orchestrator or engine (Spark, Airflow, dbt, Flink, or plain scripts). Match the project's existing stack and conventions; never introduce a new framework where the codebase already has one. This mode is the build-time complement of `/ds-data-review`, which audits the operational store (schema, queries, transactions, migrations) after the fact — and, run as `/ds-data-review --pipelines`, audits the pipeline code itself. This mode shapes how the pipeline gets built; that review audits it once it's built.
 
 ## Correctness & determinism
 
