@@ -44,6 +44,7 @@ Skip this section entirely if `--no-tiger` was passed. Otherwise it is mandatory
 - [ ] Legacy idioms a modernizer would rewrite are flagged — pre-`slices`/`maps` helpers, `interface{}` over `any`, manual `b.N` loops (run `golangci-lint`'s `modernize`, or `go fix` on Go 1.26+)
 
 ### Performance
+_Idiom-level checks only — for a ranked, costed optimization plan, use `/ds-perf-plan`._
 - [ ] No allocation in request hot path (profile with `go test -benchmem` if critical)
 - [ ] Slice pre-allocated with `make([]T, 0, knownCap)` where capacity is known
 - [ ] `sync.Pool` used for frequently allocated/freed objects in hot paths

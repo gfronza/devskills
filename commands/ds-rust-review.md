@@ -110,6 +110,7 @@ Skip this section entirely if `--no-tiger` was passed. Otherwise it is mandatory
 - [ ] No custom `Display` that duplicates `Debug` — both should exist independently
 
 ### Performance
+_Idiom-level checks only — for a ranked, costed optimization plan, use `/ds-perf-plan`._
 - [ ] No allocation inside loops where pre-allocation is possible
 - [ ] `String::with_capacity(n)` / `Vec::with_capacity(n)` where size is known
 - [ ] No repeated `HashMap::get` + `HashMap::insert` — use `entry()` API
