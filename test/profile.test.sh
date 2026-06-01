@@ -71,13 +71,13 @@ test_idempotent() {
 }
 
 test_option_stacking() {
-  echo "test: --concise/--hints stack blocks without duplicating base"
+  echo "test: --concise/--phases stack blocks without duplicating base"
   reset_state
   local ws; ws="$(workspace)"
   devskills_apply "$PROMPTS" "$ws" 0 go 0 0 >/dev/null 2>&1
   devskills_apply "$PROMPTS" "$ws" 0 go 1 1 >/dev/null 2>&1
   assert_grep "$ws/AGENTS.md" "<!-- BEGIN devskills:concise -->" "concise block added on re-run"
-  assert_grep "$ws/AGENTS.md" "<!-- BEGIN devskills:tooling -->" "tooling block added on re-run"
+  assert_grep "$ws/AGENTS.md" "<!-- BEGIN devskills:phases -->" "phases block added on re-run"
   assert_count "$(grep -cF "<!-- BEGIN devskills:base -->" "$ws/AGENTS.md")" 1 "base block not duplicated"
   rm -rf "$ws"
 }

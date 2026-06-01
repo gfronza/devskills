@@ -63,7 +63,6 @@ Keep devskills up to date:
 --skip-cursor        skip Cursor rules
 --skip-vscode        skip VSCode Copilot instructions
 --concise            add a terse-response directive to AGENTS.md (with --lang)
---hints              add a devskills tooling reference to AGENTS.md (with --lang)
 --dry-run            show what would happen, write nothing
 ```
 
@@ -72,7 +71,6 @@ Keep devskills up to date:
 ```
 --lang=<profile>     optional; stacks a language profile (go|typescript|javascript|rust|python|java|zig)
 --concise            add a terse-response directive to AGENTS.md
---hints              add a devskills tooling reference to AGENTS.md
 --cursor             install Cursor rules into current project
 --vscode             install VSCode Copilot instructions into current project
 --dry-run            show what would happen, write nothing
@@ -170,13 +168,12 @@ devskills ships no fixed pipeline. Each command does one job and hands control b
 | `base` | always | Universal engineering principles — think before coding, simplicity first, surgical changes, goal-driven execution, safe at the boundaries |
 | `language` | `--lang=<x>` | Stack-specific idioms, toolchain, and review constraints |
 | `concise` | `--concise` | Terse-response directive (caveman-lite behavior, baked in) |
-| `tooling` | `--hints` | Reference list of devskills commands, tldt, and RTK |
 
 Running `setup.sh` with no flags writes just the baseline. Each block lives between `<!-- BEGIN/END devskills:<id> -->` markers, so re-running is idempotent and swapping `--lang` replaces only that block. Existing `AGENTS.md`/`CLAUDE.md` files are backed up (sibling timestamped `.bak`) once, before any change — these are transient; delete them or keep them out of version control once you've confirmed the result.
 
-`update.sh` refreshes the globally-installed commands, but not a project's `AGENTS.md` — the managed blocks are a point-in-time snapshot. To pull baseline or tooling changes into a project after an update, re-run `setup.sh` there (idempotent, so it just refreshes the blocks in place).
+`update.sh` refreshes the globally-installed commands, but not a project's `AGENTS.md` — the managed blocks are a point-in-time snapshot. To pull baseline changes into a project after an update, re-run `setup.sh` there (idempotent, so it just refreshes the blocks in place).
 
-The baseline blocks target `AGENTS.md` (Claude Code, OpenCode, and OpenAI Codex). Cursor and VSCode Copilot have their own rule mechanisms — `--cursor` installs `.cursor/rules/*.mdc` and `--vscode` writes `copilot-instructions.md`. Both honor `--lang`: they carry Tiger Style plus the notes for the selected language only (no `--lang` writes Tiger Style alone), but not the `base`/`concise`/`tooling` blocks.
+The baseline blocks target `AGENTS.md` (Claude Code, OpenCode, and OpenAI Codex). Cursor and VSCode Copilot have their own rule mechanisms — `--cursor` installs `.cursor/rules/*.mdc` and `--vscode` writes `copilot-instructions.md`. Both honor `--lang`: they carry Tiger Style plus the notes for the selected language only (no `--lang` writes Tiger Style alone), but not the `base`/`concise` blocks.
 
 To back out, `setup.sh --uninstall` strips the devskills blocks (and removes a file that held *only* devskills content), leaving your own content untouched — a clean install→uninstall round-trip restores the originals exactly.
 
@@ -198,7 +195,7 @@ Each profile encodes idioms, toolchain defaults, and review constraints for its 
 
 `install.sh` — one-time global install. Copies commands to Claude Code and OpenCode config dirs. Installs external tools. Run from anywhere.
 
-`scripts/setup.sh` — per-project configurator. Builds `AGENTS.md` (engineering baseline + optional language/concise/tooling blocks) and points `CLAUDE.md` at it via `@AGENTS.md`, optionally installs Cursor rules and VSCode Copilot instructions into the current directory. Run from inside a project. See [Repository Setup](#repository-setup).
+`scripts/setup.sh` — per-project configurator. Builds `AGENTS.md` (engineering baseline + optional language/concise blocks) and points `CLAUDE.md` at it via `@AGENTS.md`, optionally installs Cursor rules and VSCode Copilot instructions into the current directory. Run from inside a project. See [Repository Setup](#repository-setup).
 
 `scripts/update.sh` — pulls the latest devskills repo and reinstalls skills. Use `--upgrade-deps` to also force-upgrade RTK and tldt to their latest published versions.
 
