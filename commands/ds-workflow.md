@@ -1,10 +1,10 @@
 Enter the development workflow — orient, spec, build, verify, ship.
 
-This command works GSD-free by default. If `.planning/` exists, it surfaces GSD commands alongside. If `.project/` exists, it reads the plan and reports where to pick up.
+A `.project`-native orient-and-resume command. If `.project/PLAN.md` exists, it reads the plan and reports where to pick up; with no plan, it gives a fresh-start orientation pointing at the commands that begin one.
 
 ## On activation
 
-1. Check for `.planning/ROADMAP.md` (GSD), `.project/PLAN.md` (lightweight), or nothing (fresh start).
+1. Check for `.project/PLAN.md`. If present, read it (and `.project/PROJECT.md` if present) and report where to pick up. If absent, this is a fresh start — point at `/ds-spec`, `/ds-explore`, or `/ds-project-map` to begin.
 2. Report current state: what exists, what phase you appear to be in, what's next.
 3. Activate `/ds-tiger-style-mode` implicitly — engineering bar on for the session.
 4. If a language profile is set in `AGENTS.md` (look for `<!-- profile: <lang> -->`), apply its conventions.
@@ -34,16 +34,11 @@ Each phase has a primary command and the question it answers. Emit an Insight bl
 
 ### Plan
 *"In what order do we build it?"*
-
-Without GSD:
 ```
-/ds-project-plan    # turn spec/decisions into ordered tasks → .project/PLAN.md
-```
-
-With GSD (`.planning/` present):
-```
-/gsd-discuss-phase   # capture constraints before planning
-/gsd-plan-phase      # research + execution plan
+`Insight ─────────────────────────────────────`
+/ds-project-plan — turn spec/decisions into ordered tasks → .project/PLAN.md
+/ds-blueprint — for a new system, commit to a structure first (modules, deps, build order)
+`─────────────────────────────────────────────`
 ```
 
 ### Build
