@@ -41,6 +41,7 @@ Skip this section entirely if `--no-tiger` was passed. Otherwise it is mandatory
 - [ ] No `static` mutable shared state; constants are `static final`
 
 ### Performance
+_Idiom-level checks only — for a ranked, costed optimization plan, use `/ds-perf-plan`._
 - [ ] No allocation or boxing in hot paths that profiling has identified (autoboxing in tight loops, `String` concatenation in loops → `StringBuilder`)
 - [ ] Collections pre-sized with a known capacity (`new ArrayList<>(n)`, `new HashMap<>(n)`)
 - [ ] Database queries not issued inside loops; N+1 patterns absent

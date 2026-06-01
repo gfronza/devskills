@@ -49,6 +49,7 @@ Skip this section entirely if `--no-tiger` was passed. Otherwise it is mandatory
 - [ ] No `# type: ignore` without a trailing reason comment
 
 ### Performance
+_Idiom-level checks only — for a ranked, costed optimization plan, use `/ds-perf-plan`._
 - [ ] No blocking calls (`time.sleep`, `requests`, sync DB drivers) inside `async def` — use async clients or `asyncio.to_thread`
 - [ ] Every external `await` / network / DB call has a timeout
 - [ ] Concurrent tasks managed with `asyncio.TaskGroup` (scoped lifetime, sibling cancellation, `ExceptionGroup`) over bare `asyncio.gather`

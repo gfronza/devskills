@@ -50,6 +50,12 @@ Skip this section entirely if `--no-tiger` was passed. Otherwise it is mandatory
 - [ ] Unsafe HTML rendering avoided; content sanitized before DOM insertion
 - [ ] Keys on lists are stable identifiers, not array indices
 
+### Performance
+_Idiom-level checks only — for a ranked, costed optimization plan, use `/ds-perf-plan`._
+- [ ] No database/network calls issued inside loops; N+1 patterns absent
+- [ ] Independent async work runs concurrently (`Promise.all`), not awaited one-by-one
+- [ ] Large payloads streamed, not fully buffered — Workers have a tight memory budget
+
 ### Security
 - [ ] No dynamic code execution from untrusted strings
 - [ ] Raw HTML insertion avoided unless content is sanitized through a trusted library

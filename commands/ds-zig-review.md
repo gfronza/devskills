@@ -58,6 +58,12 @@ Skip this section entirely if `--no-tiger` was passed. Otherwise it is mandatory
 - [ ] Integer overflow intent explicit: `+%`/`+|` only where wrap/saturate is wanted, plain `+`/`-`/`*` otherwise
 - [ ] `defer`/`errdefer` declared next to the acquisition they release
 
+### Performance
+_Idiom-level checks only — for a ranked, costed optimization plan, use `/ds-perf-plan`._
+- [ ] No allocation in hot paths — reuse a buffer or an arena instead of per-iteration alloc/free
+- [ ] Known-size collections sized up front (`ensureTotalCapacity`/`initCapacity`), not grown incrementally
+- [ ] `ReleaseSafe` cost measured before reaching for `ReleaseFast` — drop safety checks only when justified
+
 ### Safety
 - [ ] Code intended for production runs in `Debug`/`ReleaseSafe`; any `ReleaseFast`/`ReleaseSmall` choice that drops safety checks is deliberate and justified
 - [ ] All external/untrusted input validated and bounded (lengths, indices, sizes) before use

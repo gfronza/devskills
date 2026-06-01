@@ -26,7 +26,6 @@ SKIP_EXTERNAL=0
 SKIP_CURSOR=0
 SKIP_VSCODE=0
 CONCISE=0
-HINTS=0
 PHASES=0
 DRY_RUN=0
 
@@ -38,11 +37,10 @@ for arg in "$@"; do
     --skip-cursor) SKIP_CURSOR=1 ;;
     --skip-vscode) SKIP_VSCODE=1 ;;
     --concise) CONCISE=1 ;;
-    --hints) HINTS=1 ;;
     --phases) PHASES=1 ;;
     --dry-run) DRY_RUN=1 ;;
     --help|-h)
-      echo "Usage: install.sh [--lang=go|typescript|javascript|rust|python|java|zig] [--claude-dir=PATH] [--skip-external] [--skip-cursor] [--skip-vscode] [--concise] [--hints] [--phases] [--dry-run]"
+      echo "Usage: install.sh [--lang=go|typescript|javascript|rust|python|java|zig] [--claude-dir=PATH] [--skip-external] [--skip-cursor] [--skip-vscode] [--concise] [--phases] [--dry-run]"
       echo ""
       echo "  --lang=<profile>    Language profile to write: go|typescript|javascript|rust|python|java|zig"
       echo "  --claude-dir=PATH   Claude config dir (default: \$CLAUDE_CONFIG_DIR or \$HOME/.claude)"
@@ -50,7 +48,6 @@ for arg in "$@"; do
       echo "  --skip-cursor       Skip Cursor rules install into the current project"
       echo "  --skip-vscode       Skip VSCode Copilot instructions install into the current project"
       echo "  --concise           Add a terse-response directive to AGENTS.md (with --lang)"
-      echo "  --hints             Add a devskills tooling reference to AGENTS.md (with --lang)"
       echo "  --phases            Add phase-aware Insight suggestions to AGENTS.md (with --lang)"
       echo "  --dry-run           Show what would happen, write nothing"
       exit 0
@@ -84,9 +81,9 @@ case "${PWD}/" in
 esac
 
 # AGENTS.md is only written when --lang is given (see install_lang_profile).
-# Flag --concise/--hints used without --lang so they aren't a silent no-op.
-if [ -z "$LANG_PROFILE" ] && { [ "$CONCISE" -eq 1 ] || [ "$HINTS" -eq 1 ]; }; then
-  warn "--concise/--hints apply with --lang; nothing written to AGENTS.md. Use scripts/setup.sh for a baseline-only project."
+# Flag --concise used without --lang so it isn't a silent no-op.
+if [ -z "$LANG_PROFILE" ] && [ "$CONCISE" -eq 1 ]; then
+  warn "--concise applies with --lang; nothing written to AGENTS.md. Use scripts/setup.sh for a baseline-only project."
 fi
 
 # Validate --lang up front, before any install side effects: a bad profile
@@ -118,9 +115,12 @@ install_file() {
 # touches names devskills itself shipped, never user-authored commands.
 #   frontend.md     -> ui.md (now ds-ui-mode.md)
 #   write-a-skill.md -> write-a-command.md (now ds-write-a-command.md)
+#   ds-project-plan.md -> ds-roadmap.md (a plan-generator, not `.project` memory —
+#                         so it left the project-* family; a post-prefix rename)
 # Every command was namespaced with a `ds-` prefix (modes also gain a `-mode`
-# suffix); the pre-prefix filenames below are retired here. New names all carry
-# the `ds-` prefix, so none collide with the stale names being removed.
+# suffix); the pre-prefix filenames below are retired here, plus the one
+# post-prefix rename above (`ds-project-plan.md`). New names all carry the `ds-`
+# prefix and none collide with the stale names being removed.
 RENAMED_COMMANDS=(
   frontend.md write-a-skill.md
   bug-review.md caveman-lite.md caveman-ultra.md code-quality-review.md
@@ -130,6 +130,7 @@ RENAMED_COMMANDS=(
   security-review.md spec.md tdd.md test-quality-review.md test.md
   tiger-style.md tldt.md ts-review.md ui-quality-review.md ui.md
   verify-this.md workflow.md write-a-command.md zoom-out.md
+  ds-project-plan.md
 )
 
 purge_renamed_commands() {
@@ -146,7 +147,7 @@ purge_renamed_commands() {
 }
 
 # ------------------------------------------------------------
-# Claude Code skills
+# Claude Code commands
 # ------------------------------------------------------------
 
 install_claude() {
@@ -164,7 +165,7 @@ install_claude() {
 }
 
 # ------------------------------------------------------------
-# OpenCode skills
+# OpenCode commands
 # ------------------------------------------------------------
 
 install_opencode() {
@@ -213,7 +214,7 @@ install_lang_profile() {
 
   # shellcheck source=scripts/lib/profile.sh
   source "${DEVSKILLS_DIR}/scripts/lib/profile.sh"
-  devskills_apply "${DEVSKILLS_DIR}/prompts" "$PWD" "$DRY_RUN" "$lang" "$CONCISE" "$HINTS" "$PHASES"
+  devskills_apply "${DEVSKILLS_DIR}/prompts" "$PWD" "$DRY_RUN" "$lang" "$CONCISE" "$PHASES"
 }
 
 # ------------------------------------------------------------

@@ -163,7 +163,21 @@ This loop covers the full spec-to-ship ground — spec, plan, build, verify, shi
 
 Ship with plain `git` + `gh`. The artifacts that persist your thinking are `SPEC.md` and `DECISIONS.md` — commit them. This is deliberately lighter than a phase-based engine: fewer moving parts, no background state, faster to start.
 
-To carry plan and state *across* sessions (so `/clear` is always safe), layer the `.project/` commands on top — `/ds-project-map`, `/ds-project-plan`, `/ds-project-checkpoint`, `/ds-project-resume`. See [project-workflow.md](project-workflow.md).
+To carry plan and state *across* sessions (so `/clear` is always safe), layer the `.project/` memory commands on top — `/ds-project-map`, `/ds-project-checkpoint`, `/ds-project-resume` — and seed the plan with `/ds-roadmap`. See [project-workflow.md](project-workflow.md).
+
+---
+
+## Drive a multi-PR contribution queue (one PR per issue, `/clear`-safe)
+
+When you have a backlog of independent changes to land as *separate* PRs — a queue of issues, or a big refactor split into reviewable chunks — the `.project/` files turn it into a loop that survives `/clear` and hands cleanly between sessions. The plan *is* the protocol.
+
+1. **Map once, plan the queue.** `/ds-project-map` writes `.project/PROJECT.md` (the repo facts every issue shares). Then capture the queue in `.project/PLAN.md`: issue order, a **Current** pointer (which issue, which step), and the per-issue loop (branch → implement → `npm test` → draft PR → grill → ready → merged → sync). Putting the protocol *in the plan* is what makes the session reconstructible after a `/clear`.
+2. **One branch + one draft PR per issue.** Branch off fresh `main`, implement surgically from the issue's spec, run the tests, open a **draft** PR. Record the PR URL under Current in `PLAN.md`.
+3. **Grill the draft, then mark ready.** Point `/ds-grill-me` at the open PR to stress-test the *approach* one decision at a time; apply what it surfaces, then `gh pr ready`. (This is [the draft-PR grill loop](#the-draft-pr-grill-loop) used as one step of the larger loop.)
+4. **Confirm-then-advance at the gates.** Treat *mark-ready* and *merged* as human checkpoints — never assume a merge. Once merged: `git fetch upstream && git checkout main && git merge --ff-only upstream/main`, delete the branch, tick the issue off, and move the Current pointer to the next one.
+5. **Checkpoint before `/clear`.** Because `PLAN.md` always holds Current issue + step + PR URL, you can `/clear` between issues (or hand to a fresh agent via `/ds-project-resume`) and resume exactly where you left off — no transcript needed.
+
+Why it holds up: each issue is an isolated branch+PR (small, reviewable, revertible), the queue's state lives in a file instead of the conversation, and the ready/merged gates stay human. `.project/` is the shared memory; `git` + `gh` do the rest.
 
 ---
 
@@ -172,7 +186,7 @@ To carry plan and state *across* sessions (so `/clear` is always safe), layer th
 When you want to *drive* — approve, steer, or replan at every step instead of letting a long autonomous run unfold — turn an existing plan over to `/ds-step-mode`:
 
 ```
-/ds-project-plan                 # (or any plan: a path, or pasted text)
+/ds-roadmap                 # (or any plan: a path, or pasted text)
 /ds-step-mode current plan       # work it one step at a time, gated
    ...for each step: it proposes → you approve/amend/combine/redirect → it does one step → stops...
 /ds-project-checkpoint           # at a milestone, persist state so /clear is safe
@@ -190,7 +204,7 @@ The discipline that makes this work: it proposes the next step and **waits** (a 
 /ds-spec                    # WHAT: requirements + acceptance criteria → SPEC.md
 /ds-explore                 # options at the big forks (--web to research references)
 /ds-blueprint  SPEC.md      # commit to one architecture: modules, deps, seams, build order
-/ds-project-plan            # turn the build order into an ordered task list
+/ds-roadmap            # turn the build order into an ordered task list
    ...build the walking skeleton, then the increments...
 ```
 
@@ -206,7 +220,7 @@ When you adopt a running project whose architecture is already wrong, `/ds-code-
 /ds-zoom-out                     # 1. map the system first — modules, callers, boundaries
 /ds-architecture-plan            # 2. critique + sequenced roadmap (L1/L2/L3 by blast radius)
 /ds-architecture-plan --max-level=1   # or: safe, in-place wins only to start
-/ds-project-plan                 # 3. turn the roadmap into ordered tasks
+/ds-roadmap                 # 3. turn the roadmap into ordered tasks
    ...build each step; add characterization tests at the seam before risky moves...
 /ds-verify-this <claim>          # 4. prove a risky move preserved behavior
 ```
@@ -274,6 +288,8 @@ Two failure modes on long tasks: the context window fills, and prose burns token
 
 ## Which command, when
 
+Indexed by *what you want to do*, not by kind — for the suffix taxonomy (`-mode` / `-review` / `-plan`), see [commands.md](commands.md#kinds-of-command).
+
 | You want to… | Reach for |
 |---|---|
 | Turn an idea into a verifiable contract | `/ds-spec` |
@@ -299,6 +315,7 @@ Two failure modes on long tasks: the context window fills, and prose burns token
 | Prove a change actually works | `/ds-verify-this` |
 | Hold the session to a strict bar | `/ds-tiger-style-mode` |
 | Pause / switch sessions cleanly | `/ds-handoff` |
+| Land a backlog as separate PRs, `/clear`-safe | `/ds-roadmap` + `/ds-project-resume` |
 | Compress a long source doc | `/ds-tldt` |
 | Save tokens on a long session | `/ds-caveman-lite-mode` · `/ds-caveman-ultra-mode` |
 | Run the full pre-PR review pipeline with fixes between passes | `/ds-quality-gate-mode` |
