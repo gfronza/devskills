@@ -1,6 +1,6 @@
 Design a target architecture for a new system — module boundaries, dependency rules, seams, and build order — from its requirements. Reports a blueprint; changes nothing.
 
-When invoked, take the requirements (a `SPEC.md`, a chosen approach from `/ds-explore`, or a freeform description) and commit to a concrete architecture. This is the **decisive** counterpart to `/ds-explore`: where explore surveys options and abstains, this **recommends one** structure and notes key alternatives briefly. It describes the structural *how*, not the behavioral *what* (that's `/ds-spec`). To critique or refactor an architecture that *already exists*, use `/ds-architecture-plan` instead. **Do not write code or scaffold files** — the output is the plan. Hand it to `/ds-project-plan` to turn the build order into tasks.
+When invoked, take the requirements (a `SPEC.md`, a chosen approach from `/ds-explore`, or a freeform description) and commit to a concrete architecture. This is the **decisive** counterpart to `/ds-explore`: where explore surveys options and abstains, this **recommends one** structure and notes key alternatives briefly. It describes the structural *how*, not the behavioral *what* (that's `/ds-spec`). To critique or refactor an architecture that *already exists*, use `/ds-architecture-plan` instead. **Do not write code or scaffold files** — the output is the plan. Hand it to `/ds-roadmap` to turn the build order into tasks.
 
 ## Arguments
 

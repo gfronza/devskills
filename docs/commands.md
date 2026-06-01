@@ -9,7 +9,7 @@ A command's **suffix tells you its kind**:
 - **`-mode`** — persistent, toggleable session behavior; changes *how* the agent works until you turn it off. *tiger-style, ui, test, tdd, data, git, step, quality-gate, caveman-lite/ultra.*
 - **`-review`** — a findings-list audit. Report-only by default (several take `--fix`); findings are independent and fixable in any order. *bug, security, data, code-quality, doc-quality, test-quality, ui-quality, comment, and the six language reviews.*
 - **`-plan`** — graded, sequenced moves that each carry a trade-off or dependency, so the output is a *plan*, not a verdict. *perf-plan, architecture-plan.*
-- **no suffix** — a one-shot action that produces a result and returns. *spec, explore, blueprint, grill-me, handoff, zoom-out, tldt, verify-this, debug, deslop, write-a-command, and the project-\* family.*
+- **no suffix** — a one-shot action that produces a result and returns. *spec, roadmap, explore, blueprint, grill-me, handoff, zoom-out, tldt, verify-this, debug, deslop, write-a-command, and the project-\* family.*
 - **language profiles** — configured per project via `--lang=<x>`, not invoked as slash commands (see the [README](../README.md#language-profiles)).
 
 Everything except `-mode` runs once and finishes; a `-mode` stays on. The per-command headings below tag each one with its kind. No command needs external tooling — every one stands alone.
@@ -26,6 +26,13 @@ Turn a rough description into a structured specification (the WHAT, not the HOW)
 - **Output:** `.project/SPEC.md` if `.project/` exists, else `SPEC.md` in the current directory, shown inline. Sections: Problem, Scope, Users, Functional/Non-Functional Requirements, Interfaces, Constraints, Acceptance Criteria, Open Questions.
 - **Reach for it when:** you have an idea and want a verifiable contract before any code.
 
+### `/ds-roadmap` — action
+
+Turn a goal, a `SPEC.md`, or another command's output (e.g. `/ds-code-quality-review` findings, a bug list) into an ordered `## Roadmap` task checklist. The companion to `/ds-spec` — spec defines the WHAT, this orders the work to get there. Sequences and scopes; does not choose architecture.
+
+- **Output:** `.project/PLAN.md` if `.project/` exists, else `PLAN.md` in the current directory (`.project/` is never created for you). Appends to existing tasks; preserves a `## Now` section (that belongs to `/ds-project-checkpoint`).
+- **Reach for it when:** you have a spec, a goal, or a pile of findings and want them turned into an ordered, shippable task list.
+
 ### `/ds-explore` — action
 
 Surface candidate approaches to a problem with their trade-offs — suggests, never decides, never implements. Reads `.project/` state and decisions (and the code) so options respect reality; can do bounded, cited web research with `--web` (off by default — and if local context is too thin for good options, it says so and suggests `--web` rather than guessing). Writes a scratch `.project/EXPLORE.md` (or a temp path) and lists the open questions the choice hinges on.
@@ -39,7 +46,7 @@ Design a target architecture for a **new** system from its requirements — modu
 
 - **Args:** a requirements source (a `SPEC.md` path, a freeform description, or a chosen approach from `/ds-explore`); with none, reads `SPEC.md` if present or asks. `--no-tiger` skips the Tiger Style section.
 - **Output:** a blueprint — shape (+ the tier it's pitched at), modules/boundaries, dependency rules (acyclic), seams, build order, what's deferred (and what would justify adding it), and the alternative considered. Changes nothing.
-- **Reach for it when:** starting a new system or subsystem and you want the structural HOW committed before building. Hand the build order to `/ds-project-plan`.
+- **Reach for it when:** starting a new system or subsystem and you want the structural HOW committed before building. Hand the build order to `/ds-roadmap`.
 
 ### `/ds-grill-me` — action
 
@@ -58,15 +65,11 @@ A standalone phase-map orchestrator — orients you, then routes each phase (ori
 
 ## Project memory (`.project/`)
 
-A minimal, file-backed project memory — persistent description, plan, and state in plain markdown under `.project/`, so any session is safe to `/clear` or end. These are *scribes, not pilots*: they record what you decide, never steer architecture. Walkthrough: [project-workflow.md](project-workflow.md). Worked use cases: [project-recipes.md](project-recipes.md).
+A minimal, file-backed project memory — three commands that keep a durable description, plan, and session state in plain markdown under `.project/`, so any session is safe to `/clear` or end. (The plan's `## Roadmap` is seeded by `/ds-roadmap` above; these maintain and restore it.) These are *scribes, not pilots*: they record what you decide, never steer architecture. Walkthrough: [project-workflow.md](project-workflow.md). Worked use cases: [project-recipes.md](project-recipes.md).
 
 ### `/ds-project-map` — action
 
 Scan the repo and write/refresh `.project/PROJECT.md` (overview, stack, repo map, constraints). Facts only — describes what exists. Run once at start; re-run when the repo drifts.
-
-### `/ds-project-plan` — action
-
-Turn input into an ordered task checklist in `.project/PLAN.md` (`## Roadmap`). Input can be a goal, a `SPEC.md`, or pasted output from another command (e.g. `/ds-code-quality-review` findings). Sequences and scopes; does not choose architecture.
 
 ### `/ds-project-checkpoint` — action
 
@@ -260,7 +263,7 @@ Assess an **existing** codebase's architecture and produce a sequenced refactori
 
 - **Args:** scope (directories, packages, the repo); defaults to the whole project. `--max-level=<1|2|3>` clamps (`--max-level=1` = safe, in-place wins only); `--no-tiger` skips the Tiger Style section.
 - **Output:** a 3–5 line assessment, then ordered steps ranked by leverage — each with its level tag (L1 in-place / L2 restructure-within-style / L3 architecture-style change), the symptom it fixes, why-now/what-it-unblocks, blast radius & risk, and whether characterization tests are needed at the seam first. Changes nothing.
-- **Reach for it when:** onboarding a codebase inherited in a bad state, or before a structural refactor. Map first with `/ds-zoom-out`; turn the roadmap into tasks with `/ds-project-plan`. (To design a *new* architecture, use `/ds-blueprint`.)
+- **Reach for it when:** onboarding a codebase inherited in a bad state, or before a structural refactor. Map first with `/ds-zoom-out`; turn the roadmap into tasks with `/ds-roadmap`. (To design a *new* architecture, use `/ds-blueprint`.)
 
 ---
 

@@ -4,7 +4,7 @@ When invoked, read the project's persisted state and report where to pick up —
 
 ## Process
 
-1. If `.project/PLAN.md` does not exist, say so and suggest `/ds-project-map` then `/ds-project-plan`. Stop.
+1. If `.project/PLAN.md` does not exist, say so and suggest `/ds-project-map` then `/ds-roadmap`. Stop.
 2. Read `.project/PLAN.md` — focus on `## Now` (state, next, open questions) and the `## Roadmap` status.
 3. Read `.project/PROJECT.md` if present, for the repo map and constraints.
 4. If `.project/handoff.md` exists, check whether it is still current — by **file modification time, not git** (the workflow must work when `.project/` is git-ignored or the repo has no git):

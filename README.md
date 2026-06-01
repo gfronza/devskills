@@ -98,7 +98,7 @@ Keep plan and state across sessions in plain markdown under `.project/`, so any 
 
 ```
 /ds-project-map         → scan the repo → .project/PROJECT.md (description + map)
-/ds-project-plan        → ordered tasks → .project/PLAN.md (feed it a goal, SPEC.md, or command output)
+/ds-roadmap             → ordered tasks → .project/PLAN.md (feed it a goal, SPEC.md, or command output)
    ...you drive the work...
 /ds-project-checkpoint  → persist state → .project/PLAN.md (--handoff for a full handoff.md)
 /ds-project-resume      → restore context from .project/PLAN.md
@@ -170,12 +170,12 @@ Every `-review` reports by default and changes nothing; pass `--fix` to apply th
 | Skill | Command | Description |
 |-------|---------|-------------|
 | Spec | `/ds-spec` | Convert a description into a structured specification |
+| Roadmap | `/ds-roadmap` | Ordered `## Roadmap` task list from a goal/spec/findings (`.project/PLAN.md`, or `PLAN.md` without `.project/`) |
 | Explore | `/ds-explore` | Lay out candidate approaches with trade-offs (`--web` for research) |
 | Blueprint | `/ds-blueprint` | Design a target architecture for a new system — modules, dependency rules, seams, build order. Decisive counterpart to `ds-explore` |
 | Grill Me | `/ds-grill-me` | Relentless plan interview (`--record` logs to DECISIONS.md) |
 | Workflow | `/ds-workflow` | Standalone phase-map orchestrator — orient, then route each phase to its command (uses `.project/` state when present, never requires it) |
 | Project Map | `/ds-project-map` | Scan the repo into `.project/PROJECT.md` |
-| Project Plan | `/ds-project-plan` | Ordered task roadmap in `.project/PLAN.md` |
 | Project Checkpoint | `/ds-project-checkpoint` | Persist state to `.project/PLAN.md` (`--handoff` for a full handoff) |
 | Project Resume | `/ds-project-resume` | Restore context from `.project/PLAN.md` |
 | Deslop | `/ds-deslop` | Strip AI-generated slop from the branch diff |

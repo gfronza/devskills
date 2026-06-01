@@ -25,15 +25,17 @@ Plain markdown. No hidden state, no checksums. Commit it as shared project memor
 
 ---
 
-## The four commands
+## The commands
+
+Three keep the `.project/` memory — `/ds-project-map`, `/ds-project-checkpoint`, `/ds-project-resume`; `/ds-roadmap` seeds the plan and works with or without `.project/`.
 
 ### `/ds-project-map` → `PROJECT.md`
 
 Reads the actual code and writes (or refreshes) the stable description: overview, stack, a repo map, and any hard constraints. Facts only — it describes what exists. Run it once at the start; re-run when the shape of the repo drifts.
 
-### `/ds-project-plan` → `PLAN.md` (`## Roadmap`)
+### `/ds-roadmap` → `PLAN.md` (`## Roadmap`)
 
-Turns input into an ordered task checklist. The input can be a goal, a `SPEC.md`, or **pasted output from another command** — drop in `/ds-code-quality-review` findings or a bug list and they become ordered tasks. It sequences and scopes; it does not pick libraries or patterns. Tasks are outcomes (`[ ]` / `[~]` / `[x]`), not implementation instructions.
+Turns input into an ordered task checklist. The input can be a goal, a `SPEC.md`, or **pasted output from another command** — drop in `/ds-code-quality-review` findings or a bug list and they become ordered tasks. It sequences and scopes; it does not pick libraries or patterns. Tasks are outcomes (`[ ]` / `[~]` / `[x]`), not implementation instructions. Like `/ds-spec`, it's `.project`-aware: it writes `.project/PLAN.md` here, or `PLAN.md` in the current directory when there's no `.project/`.
 
 ### `/ds-project-checkpoint [--handoff]` → `PLAN.md` (`## Now`)
 
@@ -55,7 +57,7 @@ Run at session start. Reads `PLAN.md` (and `PROJECT.md` for the map), then summa
 /ds-spec                         # optional: WHAT → .project/SPEC.md
 /ds-explore                      # optional: lay out approaches → .project/EXPLORE.md (--web to research)
 /ds-grill-me --record            # optional: decide gray areas → .project/DECISIONS.md
-/ds-project-plan                 # ordered tasks → .project/PLAN.md
+/ds-roadmap                 # ordered tasks → .project/PLAN.md
 
    ...you write code, driving the design...
 
@@ -74,7 +76,7 @@ Every step is engineer-driven and self-contained. The only persistent artifacts 
 
 ## How it relates to the standalone commands
 
-- `/ds-spec` writes to `.project/SPEC.md` when `.project/` exists (else its usual location). It defines the WHAT; `/ds-project-plan` turns that into ordered tasks.
+- `/ds-spec` and `/ds-roadmap` are a pair of `.project`-aware generators (not `.project`-only): spec writes `.project/SPEC.md` (else `SPEC.md`) and defines the WHAT; roadmap writes `.project/PLAN.md` (else `PLAN.md`) and turns that into an ordered roadmap.
 - `/ds-grill-me --record` appends to `.project/DECISIONS.md` when `.project/` exists. Grill a design, then plan it.
 - `/ds-handoff` stays separate and ephemeral (writes to a temp dir, tool-agnostic). The durable handoff is `/ds-project-checkpoint --handoff`.
 - `/ds-step-mode current plan` drives `PLAN.md` one user-gated step at a time — the execution complement to these note-taking commands (they're scribes; it's the pilot you stay in control of). It marks steps done as they complete and offers `/ds-project-checkpoint` at milestones.

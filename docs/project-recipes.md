@@ -20,7 +20,7 @@ you → "I want a CLI that watches a dir and uploads new files to S3"
 /ds-spec                       # WHAT + acceptance criteria → .project/SPEC.md
 /ds-explore --web              # research stack/approach options → .project/EXPLORE.md
 /ds-grill-me --record          # decide the open branches → .project/DECISIONS.md
-/ds-project-plan               # turn the decisions into an ordered roadmap → .project/PLAN.md
+/ds-roadmap               # turn the decisions into an ordered roadmap → .project/PLAN.md
 /ds-tiger-style-mode                # engineering bar on for the session
 you → "implement task 1: project scaffold + the dir-watch loop"
 /ds-project-map                # now there's code — capture PROJECT.md (description + repo map)
@@ -38,7 +38,7 @@ The code already exists, so **map first** — establish ground truth before plan
 ```
 /ds-project-map                # scan the existing repo → .project/PROJECT.md
 /ds-zoom-out                   # map the area you're about to touch (responsibility, callers, boundaries)
-/ds-project-plan               # seed the roadmap from your current goals / backlog
+/ds-roadmap               # seed the roadmap from your current goals / backlog
 you → "implement the first task"
 ...
 /ds-project-checkpoint
@@ -57,7 +57,7 @@ No feature — just paying down entropy. The trick is turning findings *into tas
 /ds-test-quality-review .                  # is the critical code actually tested — and are those tests any good?
 /ds-doc-quality-review .                   # docs entropy too: drift vs. code, dead links, bloat (--comments for code comments)
 you → paste the findings into:
-/ds-project-plan                           # findings become ordered tasks in PLAN.md
+/ds-roadmap                           # findings become ordered tasks in PLAN.md
 /ds-go-review        (or /ds-ts-review, /ds-rust-review)   # language idioms + security
 you → "fix roadmap tasks 1–3"
 /ds-verify-this "the auth refactor preserves the existing token behavior"
@@ -73,7 +73,7 @@ Run it on a cadence (end of a sprint, before a release). Branch-scope `/ds-code-
 /ds-spec                       # if the feature is non-trivial → .project/SPEC.md  (optional)
 /ds-explore                    # at a design fork: lay out approaches (add --web to research)
 /ds-grill-me --record          # decide → DECISIONS.md
-/ds-project-plan               # add the feature's tasks to the roadmap
+/ds-roadmap               # add the feature's tasks to the roadmap
 /ds-zoom-out                   # if it touches unfamiliar code
 /ds-tiger-style-mode                # engineering bar on
 /ds-test-mode                       # + keep the core tested as you build (stacks with /ds-tiger-style-mode)
@@ -99,7 +99,7 @@ you → "change the default timeout to 30s and update the test that asserts it"
 git commit
 ```
 
-Skip `/ds-project-plan`/`/ds-project-checkpoint` for a one-liner you commit immediately — there's no state worth persisting. Reach for the workflow when work spans more than one sitting.
+Skip `/ds-roadmap`/`/ds-project-checkpoint` for a one-liner you commit immediately — there's no state worth persisting. Reach for the workflow when work spans more than one sitting.
 
 ## Fixing a bug
 
@@ -121,7 +121,7 @@ Inherited or critical code you don't trust — get it covered *before* you chang
 /ds-test-quality-review src/billing/   # where's the critical logic untested, and which tests lie?
 /ds-bug-review src/billing/    # while you're in here: any latent defects in that code?
 you → paste the gaps into:
-/ds-project-plan               # the coverage gaps and bugs become ordered tasks
+/ds-roadmap               # the coverage gaps and bugs become ordered tasks
 /ds-test-mode                       # pragmatic testing mode on — cover by risk, not for a number
 you → "cover the proration edge cases the review flagged"
 /ds-verify-this "a mid-cycle plan change prorates to the day, not the month"
@@ -137,7 +137,7 @@ The everyday loop, end to end.
 ```
 git checkout -b feat/upload-retries
 /ds-project-resume                         # orient
-/ds-project-plan                           # if this branch needs its own task list
+/ds-roadmap                           # if this branch needs its own task list
 you → "implement tasks 1 and 2"
 /ds-deslop                                 # clean before anyone looks
 /ds-code-quality-review                    # structural pass on the branch
@@ -159,7 +159,7 @@ Big changes span sessions, so lean hard on checkpoint/resume and incremental pha
 /ds-zoom-out                   # map the current architecture broadly
 /ds-explore --web              # research target patterns / approaches → EXPLORE.md
 /ds-grill-me --record          # decide; the hard-to-reverse choices go in DECISIONS.md (ADR-worthy)
-/ds-project-plan               # break it into ordered, individually-shippable phases
+/ds-roadmap               # break it into ordered, individually-shippable phases
 /ds-tiger-style-mode
 you → "implement phase 1: introduce the new interface behind the old one"
 /ds-code-quality-review        # audit each phase

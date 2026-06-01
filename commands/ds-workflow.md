@@ -37,7 +37,7 @@ Each phase has a primary command and the question it answers. Emit an Insight bl
 ```
 `Insight ─────────────────────────────────────`
 /ds-blueprint — for a new system, commit to a structure first (modules, deps, build order)
-/ds-project-plan — sequence spec/decisions into ordered tasks (only if you persist state under .project/)
+/ds-roadmap — sequence spec/decisions into an ordered task roadmap (→ .project/PLAN.md, or PLAN.md without .project/)
 `─────────────────────────────────────────────`
 ```
 

@@ -118,9 +118,12 @@ install_file() {
 # touches names devskills itself shipped, never user-authored commands.
 #   frontend.md     -> ui.md (now ds-ui-mode.md)
 #   write-a-skill.md -> write-a-command.md (now ds-write-a-command.md)
+#   ds-project-plan.md -> ds-roadmap.md (a plan-generator, not `.project` memory —
+#                         so it left the project-* family; a post-prefix rename)
 # Every command was namespaced with a `ds-` prefix (modes also gain a `-mode`
-# suffix); the pre-prefix filenames below are retired here. New names all carry
-# the `ds-` prefix, so none collide with the stale names being removed.
+# suffix); the pre-prefix filenames below are retired here, plus the one
+# post-prefix rename above (`ds-project-plan.md`). New names all carry the `ds-`
+# prefix and none collide with the stale names being removed.
 RENAMED_COMMANDS=(
   frontend.md write-a-skill.md
   bug-review.md caveman-lite.md caveman-ultra.md code-quality-review.md
@@ -130,6 +133,7 @@ RENAMED_COMMANDS=(
   security-review.md spec.md tdd.md test-quality-review.md test.md
   tiger-style.md tldt.md ts-review.md ui-quality-review.md ui.md
   verify-this.md workflow.md write-a-command.md zoom-out.md
+  ds-project-plan.md
 )
 
 purge_renamed_commands() {

@@ -6,7 +6,7 @@ This project was configured with devskills. Reference for the available helpers:
 - Modes: `/ds-tiger-style-mode`, `/ds-ui-mode` — engineering / UI discipline for the session
 - Reviews: `/ds-code-quality-review`, `/ds-bug-review`, `/ds-security-review`, `/ds-test-quality-review`, `/ds-doc-quality-review`, `/ds-go-review`, `/ds-ts-review`, `/ds-rust-review`
 - Build & verify: `/ds-spec`, `/ds-tdd-mode`, `/ds-test-mode`, `/ds-debug`, `/ds-verify-this`, `/ds-deslop`
-- Plan & context: `/ds-explore`, `/ds-grill-me`, `/ds-project-map`, `/ds-project-plan`, `/ds-project-checkpoint`, `/ds-project-resume`, `/ds-zoom-out`, `/ds-handoff`, `/ds-workflow`
+- Plan & context: `/ds-explore`, `/ds-grill-me`, `/ds-project-map`, `/ds-roadmap`, `/ds-project-checkpoint`, `/ds-project-resume`, `/ds-zoom-out`, `/ds-handoff`, `/ds-workflow`
 
 **Token-saving tools:**
 - `/ds-caveman-lite-mode` (~25–35%) or `/ds-caveman-ultra-mode` (~75–85%) — compress responses
