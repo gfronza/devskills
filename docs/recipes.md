@@ -200,6 +200,7 @@ Two failure modes on long tasks: the context window fills, and prose burns token
 | Build with real, refactor-proof tests | `/ds-tdd-mode` |
 | Keep the core tested as you work (mode) | `/ds-test-mode` |
 | Remove AI slop from a fresh branch | `/ds-deslop` |
+| Bring a codebase's comments to discipline | `/ds-comment-review` |
 | Judge structure / find simplifications | `/ds-code-quality-review` |
 | Find real bugs (correctness) | `/ds-bug-review` |
 | Audit security, language-agnostic | `/ds-security-review` |
