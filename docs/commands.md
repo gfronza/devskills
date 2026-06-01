@@ -131,7 +131,7 @@ Pragmatic testing mode: as you build normally, ensure the code that matters gets
 Extremely strict maintainability audit: abstraction quality, file sprawl (the 1k-line smell), spaghetti-condition growth. Ambitiously hunts "code judo" — restructurings that delete whole categories of complexity while preserving behavior.
 
 - **Args:** treated as review **scope** (files or directories). With no scope, reviews the changed files on the current branch. Freeform scope ("the whole codebase") is interpreted reasonably.
-- **Output:** prioritized findings anchored to `file:line`, with an approval verdict.
+- **Output:** prioritized findings anchored to `file:line`, with an approval verdict. Changes nothing by default; `--fix` applies the mechanical, behavior-preserving findings — structural/code-judo restructurings stay reported.
 - **Reach for it when:** before merging non-trivial work, or auditing an area you suspect is decaying.
 
 ### `/ds-doc-quality-review` — action
@@ -139,7 +139,7 @@ Extremely strict maintainability audit: abstraction quality, file sprawl (the 1k
 Strict documentation audit governed by one principle — **docs earn their length** (readers skim, they don't read). Hunts wrong docs (drifted from the code) and bloated docs (true, but nobody reads them) with equal energy. Verifies mechanically: resolves links, recounts claimed counts, runs example commands where safe.
 
 - **Args:** treated as scope (files, directories, globs); defaults to docs changed on the current branch. `--comments` also audits inline code comments (off by default).
-- **Output:** prioritized findings anchored to `file:line` with a suggested fix — accuracy/drift first, then dead links and wrong counts, missing docs, bloat-to-cut, clarity. Changes nothing.
+- **Output:** prioritized findings anchored to `file:line` with a suggested fix — accuracy/drift first, then dead links and wrong counts, missing docs, bloat-to-cut, clarity. Changes nothing by default; `--fix` applies the mechanical, unambiguous findings (dead links, stale counts, lossless bloat-cuts).
 - **Reach for it when:** before a docs PR, after the code outgrew its README, or when the docs feel long and unread.
 
 ### `/ds-test-quality-review` — action
@@ -147,7 +147,7 @@ Strict documentation audit governed by one principle — **docs earn their lengt
 Strict test-suite audit governed by one principle — **test what matters, and test it well — not coverage.** Hunts critical/core code that's under-tested (the bug waiting to ship) and tests that are bad (green but worthless, or design-locking and worse than nothing) with equal energy. Checks edge/failure-mode coverage on risky logic, behavior-vs-implementation quality, and flags tests coupled to internals for rewrite-or-delete. Explicitly rejects coverage-chasing.
 
 - **Args:** treated as scope (files, directories, globs); defaults to tests covering code changed on the current branch.
-- **Output:** prioritized findings anchored to `file:line` — untested critical code first, then missing edge cases, design-locking tests, weak tests, bloat-to-cut. Changes nothing.
+- **Output:** prioritized findings anchored to `file:line` — untested critical code first, then missing edge cases, design-locking tests, weak tests, bloat-to-cut. Changes nothing by default; `--fix` applies the mechanical, unambiguous findings (deleting worthless or duplicate tests) — writing or redesigning tests stays reported.
 - **Reach for it when:** before merging logic-heavy work, or when a suite is green but you don't trust it. The audit counterpart to the `/ds-test-mode` mode and `/ds-tdd-mode`.
 
 ### `/ds-ui-quality-review` — action
@@ -155,7 +155,7 @@ Strict test-suite audit governed by one principle — **test what matters, and t
 Strict UI audit governed by one principle — **a UI is judged on both halves: it works and it's crafted.** Framework-agnostic. Hunts engineering correctness (missing/broken async states — especially **empty** — fetch waterfalls, uncancelled stale responses, state that should be derived, index-as-key), accessibility barriers (non-semantic controls, keyboard/focus gaps, contrast, missing labels/live regions), Core Web Vitals (layout shift, INP, oversized critical path), and design craft (generic-AI defaults, flat hierarchy, unsystematized type/spacing).
 
 - **Args:** treated as scope (files, directories, globs); defaults to UI code changed on the current branch.
-- **Output:** prioritized findings anchored to `file:line` — engineering correctness first, then a11y, performance, design craft. Each names the concrete failure, not "improve a11y." Changes nothing.
+- **Output:** prioritized findings anchored to `file:line` — engineering correctness first, then a11y, performance, design craft. Each names the concrete failure, not "improve a11y." Changes nothing by default; `--fix` applies the mechanical, unambiguous findings (a missing label, a non-semantic control, index-as-key) — design-craft and async-state fixes stay reported.
 - **Reach for it when:** before merging UI work, or auditing an interface you suspect is broken-on-edges, inaccessible, slow, or generic. The audit counterpart to the `/ds-ui-mode` mode.
 
 ### `/ds-deslop` — action
@@ -203,7 +203,7 @@ The review commands are a **layered gate, not competing alternatives** — cheap
 Language-agnostic **correctness** audit — the bug-hunting pass. Asks one thing: *will this misbehave at runtime?* Hunts logic errors, null/absent-value derefs, swallowed errors and half-done failure paths, resource leaks, races (TOCTOU, lock ordering), boundary/overflow mistakes, and contract misuse. Distinct from `/ds-code-quality-review` (which is maintainability, not bugs) — the same split the harness draws between cleanup and correctness.
 
 - **Args:** treated as scope (files, directories, globs); defaults to code changed on the current branch.
-- **Output:** prioritized findings anchored to `file:line` — critical (data loss / reachable crash) first, then likely-wrong, then edge-case. Each names **the exact condition that triggers it** plus the fix and a confidence note. Real defects only; no theoretical nulls. Changes nothing.
+- **Output:** prioritized findings anchored to `file:line` — critical (data loss / reachable crash) first, then likely-wrong, then edge-case. Each names **the exact condition that triggers it** plus the fix and a confidence note. Real defects only; no theoretical nulls. Changes nothing by default; `--fix` applies only mechanical, unambiguous fixes — logic-changing or uncertain ones stay reported.
 - **Reach for it when:** before merging logic-heavy work, or on any code outside go/ts/rust where there's no language review. Confirmed findings hand off to `/ds-debug` (root-cause) and `/ds-verify-this` (prove the fix).
 
 ### `/ds-security-review` — action
@@ -211,7 +211,7 @@ Language-agnostic **correctness** audit — the bug-hunting pass. Asks one thing
 Language-agnostic **security** audit — the portable counterpart to the per-language Security sections. Traces untrusted data from entry to dangerous sink: injection (SQL/command/path/SSRF/template), output handling (XSS, unsafe deserialization), broken access control (IDOR, privilege escalation), secrets and weak crypto, sensitive-data exposure, mass assignment / unsafe upload / DoS, and transport/config gaps.
 
 - **Args:** treated as scope (files, directories, globs); defaults to code changed on the current branch.
-- **Output:** prioritized findings anchored to `file:line` — critical (code exec / breach / auth bypass) → high → hardening. Each **describes the attack** (input → sink) and the fix. Exploitable over theoretical. Changes nothing.
+- **Output:** prioritized findings anchored to `file:line` — critical (code exec / breach / auth bypass) → high → hardening. Each **describes the attack** (input → sink) and the fix. Exploitable over theoretical. Changes nothing by default; `--fix` applies only mechanical, unambiguous fixes — anything that changes behavior or rests on an assumption stays reported.
 - **Reach for it when:** any change that touches input handling, auth, secrets, or external I/O — and as a pre-PR gate. The deeper language-specific checks live in `/go·ts·rust·python·java·zig-review`.
 
 ### `/ds-data-review` — action
@@ -219,7 +219,7 @@ Language-agnostic **security** audit — the portable counterpart to the per-lan
 Store-agnostic **data correctness** audit — the question no other review owns: *is the data correct, consistent, and well-modeled?* Works on relational **and** NoSQL, adapting to the store (won't demand FKs from a document database). Checks schema & integrity (missing constraints, wrong types, referential gaps, partition-key hotspots, unbounded documents), query-result correctness (JOINs that drop/duplicate rows, NULL/aggregate semantics, `LIMIT` without `ORDER BY`, pagination drift), transactions & consistency (missing boundaries, wrong isolation level, lost updates, eventual-consistency-read-as-strong), and migration safety (backward-incompatible DDL against running code, locking DDL on large tables, racy backfills, missing rollback). The line vs neighbors is drawn by *consequence*: a query that's slow → `/ds-perf-plan`; one that returns wrong/duplicate data → here. Injection stays with `/ds-security-review` (assumes parameterized queries); general code-logic races stay with `/ds-bug-review`.
 
 - **Args:** scope (files, directories, globs — including schema and migration files); defaults to code changed on the current branch. State the store/engine (Postgres, Mongo, DynamoDB…) when known — isolation defaults and dialects differ; otherwise it infers and **states the assumption**. `--pipelines` adds a sixth area — data-pipeline / ETL correctness (idempotency, replay/backfill safety, late & out-of-order data, dedup, schema drift); off by default, and the after-the-fact audit counterpart to the `/ds-data-mode` build mode.
-- **Output:** prioritized findings anchored to `file:line` — critical (silent data loss/corruption, or a migration that can lock production) → wrong-results → integrity-gap → hardening. Each names **the exact condition that triggers wrong/lost/inconsistent data**, the fix (prefer a store-enforced constraint over an app-side check that races), and the store/engine assumption it rests on. Changes nothing.
+- **Output:** prioritized findings anchored to `file:line` — critical (silent data loss/corruption, or a migration that can lock production) → wrong-results → integrity-gap → hardening. Each names **the exact condition that triggers wrong/lost/inconsistent data**, the fix (prefer a store-enforced constraint over an app-side check that races), and the store/engine assumption it rests on. Changes nothing by default; `--fix` applies only mechanical, unambiguous fixes — migration-altering or uncertain ones stay reported.
 - **Reach for it when:** a change touches schema, queries, transactions, or migrations (add `--pipelines` for ETL/pipeline code). Confirmed findings hand off to `/ds-verify-this` (prove the fix against real before/after data). The build-time complement is the `/ds-data-mode` mode.
 
 ### `/ds-go-review` · `/ds-ts-review` · `/ds-rust-review` · `/ds-python-review` · `/ds-java-review` · `/ds-zig-review` — action
@@ -232,7 +232,7 @@ Language-specific review passes.
 - **`/ds-python-review`** — Python idioms, `mypy --strict` typing, security, Tiger Style.
 - **`/ds-java-review`** — Java idioms (records, sealed types, pattern matching), security, Tiger Style.
 - **`/ds-zig-review`** — explicit allocators, errors-as-values, no hidden control flow, safety, Tiger Style (its native context).
-- **Args:** `--no-tiger` skips the Tiger Style section (all of them).
+- **Args:** `--no-tiger` skips the Tiger Style section (all of them). `--fix` (all of them) applies the mechanical, unambiguous violations; security and correctness findings stay reported.
 - **Reach for it when:** reviewing code in that language, or as a pre-PR gate.
 
 ---

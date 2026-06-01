@@ -4,10 +4,11 @@ Applies to: Python 3.13+. Backend services, APIs, CLIs, data pipelines.
 
 ## Arguments
 
-Scan the invocation for the `--no-tiger` flag. Treat every other argument as review scope (files or directories); if no scope is given, review the changed files on the current branch.
+Scan the invocation for the `--no-tiger` and `--fix` flags. Treat every other argument as review scope (files or directories); if no scope is given, review the changed files on the current branch.
 
 - `--no-tiger` present → skip the Tiger Style section; run Python Idioms, Typing, Performance, Security, and Testing only.
 - `--no-tiger` absent → run all sections (default).
+- `--fix` → after reporting, apply only the violations whose fix is **mechanical and unambiguous** (a rename to the idiom, a missing error check the review is certain about). Anything that changes logic or rests on an unverified assumption — especially security and correctness findings — **stays report-only**. End with a summary of what was applied and what was left.
 
 Example: `/ds-python-review --no-tiger pkg1/ pkg2/` reviews `pkg1/` and `pkg2/` without Tiger Style.
 

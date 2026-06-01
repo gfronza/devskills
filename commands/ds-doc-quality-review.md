@@ -1,14 +1,15 @@
-Run a strict review of documentation quality — accuracy against the code, broken links and stale counts, coverage gaps, and bloat. Reports a findings list; changes nothing.
+Run a strict review of documentation quality — accuracy against the code, broken links and stale counts, coverage gaps, and bloat. Reports a findings list by default; `--fix` applies the mechanical, unambiguous fixes.
 
 When invoked, audit the documentation in scope against one governing principle: **documentation earns its length.** Readers skim; they don't read. Every sentence that doesn't help someone do something is noise that hides the sentences that do. So hunt two failures with equal energy — docs that are *wrong* (drifted from the code) and docs that are *bloated* (true, but nobody will read them). Be ambitious about cutting: the best fix is often to delete three paragraphs, not to polish them.
 
-Like `/ds-code-quality-review`, this produces a prioritized list of what needs fixing. **Do not edit any files.**
+Like `/ds-code-quality-review`, this produces a prioritized list of what needs fixing. **Do not edit any files unless `--fix` is passed** (see Arguments).
 
 ## Arguments
 
 - Treat positional args as scope (files, directories, globs). With no scope, review the documentation changed on the current branch (`README`, `docs/`, `*.md`, and the like).
 - `--comments` — also audit inline **code comments** in scope, under the docs-accuracy lens. Off by default; prose docs only otherwise. To impose comment discipline and *apply* the fixes, reach for `/ds-comment-review` instead.
 - Freeform scope ("the whole docs/ tree", "the README") is interpreted reasonably.
+- `--fix` → after reporting, apply the findings whose fix is **mechanical and unambiguous** — a fixable dead link, a stale count, a clearly-drifted line, a bloat-cut that loses no information; leave anything resting on a judgment call (a rewrite, a restructure, a coverage gap to fill) as report-only. For inline **comment** fixes, defer to `/ds-comment-review --fix`. Close with a summary of what was applied and what was left.
 
 ## What to check
 
@@ -70,4 +71,4 @@ Rules:
 - Don't flood the list with cosmetic nits when there are real accuracy or coverage problems. A short high-conviction list beats a long pedantic one.
 - Judge length against payload, not a word count. A long doc that's all signal is fine; a short doc that's all padding is not.
 - Be direct about bloat. "This section can be deleted" is more useful than "this could be tightened".
-- Change nothing. The output is the list.
+- Report-only by default — the output is the list. With `--fix`, apply only the mechanical, unambiguous findings above and leave the judgment-dependent ones reported; then summarize what was applied vs. left.

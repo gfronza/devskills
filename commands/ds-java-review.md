@@ -4,10 +4,11 @@ Applies to: Java 25+ (LTS). Backend services, APIs, CLIs.
 
 ## Arguments
 
-Scan the invocation for the `--no-tiger` flag. Treat every other argument as review scope (files or directories); if no scope is given, review the changed files on the current branch.
+Scan the invocation for the `--no-tiger` and `--fix` flags. Treat every other argument as review scope (files or directories); if no scope is given, review the changed files on the current branch.
 
 - `--no-tiger` present → skip the Tiger Style section; run Java Idioms, Performance, Security, and Testing only.
 - `--no-tiger` absent → run all sections (default).
+- `--fix` → after reporting, apply only the violations whose fix is **mechanical and unambiguous** (a rename to the idiom, a missing error check the review is certain about). Anything that changes logic or rests on an unverified assumption — especially security and correctness findings — **stays report-only**. End with a summary of what was applied and what was left.
 
 Example: `/ds-java-review --no-tiger src/main/ src/test/` reviews both trees without Tiger Style.
 
