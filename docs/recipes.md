@@ -8,16 +8,17 @@ Everything here is **GSD-free**: it relies only on the commands, `git`, and `gh`
 
 ## Modes stack — run several at once
 
-A **mode** (`/ds-tiger-style-mode`, `/ds-ui-mode`, `/ds-data-mode`, `/ds-test-mode`, `/ds-caveman-lite-mode` / `/ds-caveman-ultra-mode`) doesn't do a job and return — it changes *how* the agent works for the rest of the session. Modes **compose**: turn on as many as fit the work. Building a tested UI to a strict bar is three at once —
+A **mode** (`/ds-tiger-style-mode`, `/ds-ui-mode`, `/ds-data-mode`, `/ds-test-mode`, `/ds-git-mode`, `/ds-caveman-lite-mode` / `/ds-caveman-ultra-mode`) doesn't do a job and return — it changes *how* the agent works for the rest of the session. Modes **compose**: turn on as many as fit the work. Building a tested UI to a strict bar, committed cleanly as you go, is four at once —
 
 ```
 /ds-tiger-style-mode             # safety + explicitness bar
 /ds-ui-mode                      # component/state discipline + design craft
 /ds-test-mode                    # keep the core honestly tested as you build
-   ...build it; all three stay active until the session ends...
+/ds-git-mode                     # commit each working unit, terse human messages, no history rewrite
+   ...build it; all four stay active until the session ends...
 ```
 
-To drop one mid-session, say so ("stop UI mode"); `/ds-caveman-lite-mode` and `/ds-caveman-ultra-mode` are the ones with explicit off-switches ("normal mode"). Everything else here — `/ds-spec`, `/ds-bug-review`, `/ds-verify-this`, … — is an **action**: it runs once and returns a result. The recipes below stitch the two together.
+To drop one mid-session, say so ("stop UI mode"); `/ds-caveman-lite-mode` and `/ds-caveman-ultra-mode` are the ones with explicit off-switches ("normal mode"). The caveman modes deliberately leave commit messages "written normally" — `/ds-git-mode` is what governs them, so the two compose cleanly. Everything else here — `/ds-spec`, `/ds-bug-review`, `/ds-verify-this`, … — is an **action**: it runs once and returns a result. The recipes below stitch the two together.
 
 ---
 
@@ -266,6 +267,7 @@ Two failure modes on long tasks: the context window fills, and prose burns token
 | Build with real, refactor-proof tests | `/ds-tdd-mode` |
 | Keep the core tested as you work (mode) | `/ds-test-mode` |
 | Build a data pipeline correctly as you go (mode) | `/ds-data-mode` |
+| Commit clean, human-readable history as you build (mode) | `/ds-git-mode` |
 | Remove AI slop from a fresh branch | `/ds-deslop` |
 | Bring a codebase's comments to discipline | `/ds-comment-review` |
 | Judge structure / find simplifications | `/ds-code-quality-review` |

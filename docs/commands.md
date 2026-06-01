@@ -93,6 +93,12 @@ Data-engineering discipline, tool-agnostic (Spark/Airflow/dbt/Flink/plain script
 
 - **Reach for it when:** building or extending a data pipeline or transform. Stacks with `/ds-tiger-style-mode` + `/ds-test-mode`. The after-the-fact audit counterpart is `/ds-data-review` (the store) and `/ds-data-review --pipelines` (the pipeline code itself) — mode shapes the build, review audits it.
 
+### `/ds-git-mode` — mode
+
+Senior-engineer commit discipline — commits written **for humans, not LLMs**. Counters the two LLM failure modes: commit-message bloat (diff re-narrated as bullet lists, emoji, "Generated with…" trailers) and mis-timed commits (a flurry of WIP commits, or one giant end-of-session dump). When active: commit each **self-contained, working** unit as it's done (builds/passes, reversible, reviewable — one logical change, not bundled, not dribbled), with terse Conventional-Commit messages (`type(scope): subject`, imperative, ~50 chars, body only for non-obvious WHY). Activating the mode is standing authorization to commit completed units without asking; it reports a one-line subject per commit. Branch-first (auto-creates a type-prefixed branch off the default branch before the first commit). **Never pushes, never rewrites shared history** (no rebase/squash/force-push) — the irreversible actions stay user-driven.
+
+- **Reach for it when:** any build session where you want clean, honest, human-readable history as you go. Stacks with `/ds-tiger-style-mode` + `/ds-test-mode` (disciplined code *and* disciplined history). It also governs the commit messages the caveman modes deliberately leave "written normally."
+
 ---
 
 ## Test & build
