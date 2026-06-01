@@ -43,7 +43,7 @@ Signal: user says "I'll continue later", "stopping for now", "handing this off".
 Suggest: `/ds-project-checkpoint` to persist state if `.project/` exists; `/ds-handoff` for a richer context file when another person or a long pause is involved.
 
 **Between sessions (starting fresh)**
-Signal: session just started and `.project/` or `.planning/` exists.
+Signal: session just started and `.project/` exists.
 Suggest: `/ds-project-resume` to read the plan and pick up where it left off.
 
 ## Rules
