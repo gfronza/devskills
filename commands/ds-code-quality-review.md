@@ -1,10 +1,12 @@
-Run an extremely strict maintainability review of code changes — abstraction quality, file sprawl, and spaghetti-condition growth.
+Run an extremely strict maintainability review of code changes — abstraction quality, file sprawl, and spaghetti-condition growth. Reports findings by default; `--fix` applies the mechanical, unambiguous ones — structural/code-judo restructurings rest on judgment and stay reported.
 
 When invoked, perform a deep code-quality audit focused on implementation quality, maintainability, abstraction quality, and overall codebase health. Be **ambitious** about structure: do not merely identify local cleanup opportunities — actively search for "code judo" moves that preserve behavior while making the implementation dramatically simpler, smaller, more direct, and more elegant. This works at the file/function/abstraction altitude, *within* the existing architecture — whether the architecture itself is sound is `/ds-architecture-plan`'s question, not this one.
 
 ## Arguments
 
 Treat every argument as review scope (files or directories). If no scope is given, review the changed files on the current branch.
+
+`--fix` → after reporting, apply only the findings whose fix is **mechanical and unambiguous** (a single obvious, behavior-preserving edit). The structural and code-judo restructurings this review favors rest on judgment, so they **stay report-only**. Summarize what was applied vs. left.
 
 ## Core Prompt
 
@@ -161,6 +163,8 @@ Prioritize findings in this order:
 
 Anchor each finding to `<file>:<line>` where possible.
 Do not flood the review with low-value nits if there are larger structural issues.
+
+Report-only by default — changes nothing. With `--fix`, apply only the mechanical, behavior-preserving findings and leave the structural ones reported. After applying, re-run any build/test/lint check already in the loop and revert any fix that breaks it or that touched more than the intended edit; then summarize what was applied vs. left.
 Prefer a smaller number of high-conviction comments over a long list of cosmetic notes.
 
 ## Approval Bar

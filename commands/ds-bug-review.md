@@ -1,13 +1,14 @@
-Run a strict correctness review of code changes — hunt real bugs, not style or structure. Reports a findings list; changes nothing.
+Run a strict correctness review of code changes — hunt real bugs, not style or structure. Reports a findings list by default; `--fix` applies the mechanical, unambiguous fixes (logic-changing or uncertain ones stay reported).
 
 When invoked, audit the code in scope against one question: **will this misbehave at runtime?** Not "is it clean" (that's `/ds-code-quality-review`), not "is it idiomatic" (that's the language reviews) — *is it correct.* Find the defects that would actually fire: wrong logic, mishandled edges, ignored failures, races, leaks. Every finding must name the condition that triggers it; a bug nobody can reach is noise.
 
-Like `/ds-code-quality-review` and `/ds-doc-quality-review`, this produces a prioritized list. **Do not edit any files.** When a finding is confirmed, `/ds-debug` root-causes the fix and `/ds-verify-this` proves it.
+Like `/ds-code-quality-review` and `/ds-doc-quality-review`, this produces a prioritized list. **Do not edit any files unless `--fix` is passed** (see Arguments). When a finding is confirmed, `/ds-debug` root-causes the fix and `/ds-verify-this` proves it.
 
 ## Arguments
 
 - Treat positional args as scope (files, directories, globs). With no scope, review the code changed on the current branch.
 - Freeform scope ("the parser", "the whole diff") is interpreted reasonably.
+- `--fix` → after reporting, apply only the findings whose fix is **mechanical and unambiguous** — a single obvious edit, no design judgment. A wrong fix to a correctness finding is worse than none, so anything that changes behavior or rests on an assumption you couldn't verify **stays report-only**. After applying, re-run any build/test/lint check already in the loop and revert any fix that breaks it — or that touched more than the intended mechanical edit. Close with a summary of what was applied and what was left.
 
 ## What to hunt
 
@@ -45,4 +46,4 @@ Rules:
 
 - Real defects only. No "could theoretically be null" without a path that reaches it — that's how false positives bury the real ones.
 - A short, high-confidence list beats a long speculative one.
-- Change nothing. The output is the list.
+- Report-only by default — the output is the list. With `--fix`, apply only the mechanical, unambiguous findings above and leave every judgment- or assumption-dependent one reported; then summarize what was applied vs. left.

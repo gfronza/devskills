@@ -1,6 +1,6 @@
-Run a strict data review of code changes — find data-correctness, integrity, and migration-safety defects. Store-agnostic (relational or NoSQL). Reports a findings list; changes nothing.
+Run a strict data review of code changes — find data-correctness, integrity, and migration-safety defects. Store-agnostic (relational or NoSQL). Reports a findings list by default; `--fix` applies the mechanical, unambiguous fixes (logic-changing or uncertain ones stay reported).
 
-When invoked, audit the code in scope against one question: **is the data correct, consistent, and well-modeled?** Not "can it be injected" (that's `/ds-security-review` — assume queries are parameterized here), not "is the query fast" (that's `/ds-perf-plan`; the line is *consequence* — a slow query is perf, a query that returns *wrong or duplicate data* is here), not general code logic (that's `/ds-bug-review`). Every finding names the concrete condition that produces wrong, lost, or inconsistent data; a "best practice" with no demonstrated hazard is noise. Adapt to the store — don't demand relational constructs from a document database. **Do not edit any files.** When a finding is confirmed, `/ds-verify-this` proves the fix against real before/after data.
+When invoked, audit the code in scope against one question: **is the data correct, consistent, and well-modeled?** Not "can it be injected" (that's `/ds-security-review` — assume queries are parameterized here), not "is the query fast" (that's `/ds-perf-plan`; the line is *consequence* — a slow query is perf, a query that returns *wrong or duplicate data* is here), not general code logic (that's `/ds-bug-review`). Every finding names the concrete condition that produces wrong, lost, or inconsistent data; a "best practice" with no demonstrated hazard is noise. Adapt to the store — don't demand relational constructs from a document database. **Do not edit any files unless `--fix` is passed** (see Arguments). When a finding is confirmed, `/ds-verify-this` proves the fix against real before/after data.
 
 ## Arguments
 
@@ -8,6 +8,7 @@ When invoked, audit the code in scope against one question: **is the data correc
 - Freeform scope ("the orders schema", "the reporting queries") is interpreted reasonably.
 - State the store/engine if you know it (Postgres, MySQL, SQLite, Mongo, DynamoDB…) — isolation defaults and SQL dialects differ. Otherwise infer from config/driver and **state the assumption**.
 - `--pipelines` extends the review with a sixth area — data-pipeline / ETL correctness (idempotency, replay/backfill safety, late & out-of-order data, dedup, schema drift). **Off by default**: the default review covers the operational store. With the flag on, it's the after-the-fact audit counterpart to the `/ds-data-mode` build mode (mode shapes the pipeline build; this audits the built pipeline code).
+- `--fix` → after reporting, apply only the findings whose fix is **mechanical and unambiguous** — a single obvious edit, no design judgment (e.g. adding a missing `NOT NULL`/`UNIQUE` the review is certain about, correcting a column type). A wrong fix to a data finding is worse than none, so anything that changes behavior, alters a migration's effect, or rests on an assumption you couldn't verify **stays report-only**. After applying, re-run any build/test/lint check already in the loop and revert any fix that breaks it — or that touched more than the intended mechanical edit. Close with a summary of what was applied and what was left.
 
 ## What to check
 
@@ -45,4 +46,4 @@ Rules:
 - Real data hazards only. Name the path to wrong, lost, or inconsistent data; a "weakness" with no such path is hardening at most.
 - Store-agnostic: don't flag the absence of relational constructs in a document store — judge against *that* store's correctness model.
 - A short, high-confidence list beats a long speculative one.
-- Change nothing. The output is the list.
+- Report-only by default — the output is the list. With `--fix`, apply only the mechanical, unambiguous findings above and leave every judgment- or assumption-dependent one reported; then summarize what was applied vs. left.

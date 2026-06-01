@@ -1,11 +1,12 @@
-Run a strict security review of code changes — find exploitable weaknesses. Language-agnostic. Reports a findings list; changes nothing.
+Run a strict security review of code changes — find exploitable weaknesses. Language-agnostic. Reports a findings list by default; `--fix` applies the mechanical, unambiguous fixes (logic-changing or uncertain ones stay reported).
 
-When invoked, audit the code in scope against one question: **how would an attacker abuse this?** Look for the weaknesses that lead to real compromise — injection, broken access control, leaked secrets, untrusted input trusted too far. This is the portable, cross-language pass; for deeper language specifics, `/ds-go-review`, `/ds-ts-review`, and `/ds-rust-review` carry their own Security sections. Every finding names the attack that exploits it. **Do not edit any files.**
+When invoked, audit the code in scope against one question: **how would an attacker abuse this?** Look for the weaknesses that lead to real compromise — injection, broken access control, leaked secrets, untrusted input trusted too far. This is the portable, cross-language pass; for deeper language specifics, `/ds-go-review`, `/ds-ts-review`, and `/ds-rust-review` carry their own Security sections. Every finding names the attack that exploits it. **Do not edit any files unless `--fix` is passed** (see Arguments).
 
 ## Arguments
 
 - Treat positional args as scope (files, directories, globs). With no scope, review the code changed on the current branch.
 - Freeform scope ("the auth handler", "the upload path") is interpreted reasonably.
+- `--fix` → after reporting, apply only the findings whose fix is **mechanical and unambiguous** — a single obvious edit, no design judgment (e.g. removing a secret committed to source, tightening over-permissive file modes). A wrong fix to a security finding is worse than none, so anything that changes behavior or rests on an assumption you couldn't verify **stays report-only**. After applying, re-run any build/test/lint check already in the loop and revert any fix that breaks it — or that touched more than the intended mechanical edit. Close with a summary of what was applied and what was left.
 
 ## What to check
 
@@ -45,4 +46,4 @@ Rules:
 
 - Exploitable findings over theoretical ones. Name a path from attacker-controlled input to impact; a "weakness" on a fully-trusted internal path is hardening at most.
 - A short, high-confidence list beats a long speculative one.
-- Change nothing. The output is the list.
+- Report-only by default — the output is the list. With `--fix`, apply only the mechanical, unambiguous findings above and leave every judgment- or assumption-dependent one reported; then summarize what was applied vs. left.
