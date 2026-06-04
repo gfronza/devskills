@@ -13,7 +13,7 @@ git clone https://github.com/gleicon/devskills.git ~/.devskills
 ~/.devskills/install.sh
 ```
 
-Commands copy to `~/.claude/commands/`, `~/.opencode/commands/`, and `~/.codex/prompts/` (each installed only when that tool is detected). External tools (RTK, tldt) install automatically if prerequisites are present.
+Commands copy to `~/.claude/commands/`, `~/.opencode/commands/`, and `~/.codex/prompts/` (each installed only when that tool is detected). External tool (tldt) installs automatically when Go is present.
 
 In Codex, devskills commands are invoked under the `prompts:` namespace — `/ds-debug` becomes `/prompts:ds-debug`. Codex reads a project's `AGENTS.md` natively, so `setup.sh` covers its persistent surface with no extra step.
 
@@ -43,7 +43,7 @@ Keep devskills up to date:
 
 ```bash
 ~/.devskills/scripts/update.sh              # pull + reinstall commands
-~/.devskills/scripts/update.sh --upgrade-deps  # also force-upgrade RTK, tldt
+~/.devskills/scripts/update.sh --upgrade-deps  # also force-upgrade tldt
 ```
 
 > **Renamed in this release:** every command is now namespaced with a `ds-`
@@ -59,7 +59,7 @@ Keep devskills up to date:
 ```
 --lang=<profile>     go | typescript | javascript | rust | python | java | zig
 --claude-dir=<path>  Claude config dir (default: $CLAUDE_CONFIG_DIR or ~/.claude)
---skip-external      skip RTK, tldt installation
+--skip-external      skip tldt installation
 --skip-cursor        skip Cursor rules
 --skip-vscode        skip VSCode Copilot instructions
 --concise            add a terse-response directive to AGENTS.md (with --lang)
@@ -192,7 +192,7 @@ Each profile encodes idioms, toolchain defaults, and review constraints for its 
 
 `scripts/setup.sh` — per-project configurator. Builds `AGENTS.md` (engineering baseline + optional language/concise blocks) and points `CLAUDE.md` at it via `@AGENTS.md`, optionally installs Cursor rules and VSCode Copilot instructions into the current directory. Run from inside a project. See [Repository Setup](#repository-setup).
 
-`scripts/update.sh` — pulls the latest devskills repo and reinstalls skills. Use `--upgrade-deps` to also force-upgrade RTK and tldt to their latest published versions.
+`scripts/update.sh` — pulls the latest devskills repo and reinstalls skills. Use `--upgrade-deps` to also force-upgrade tldt to its latest published version.
 
 `scripts/upgrade-deps.sh` — force-upgrades external tools regardless of current state. Useful after upstream major version bumps.
 
@@ -202,7 +202,6 @@ Installed by `install.sh`. Managed by `upgrade-deps.sh`.
 
 | Tool | Purpose |
 |------|---------|
-| [RTK](https://github.com/rtk-ai/rtk) | CLI proxy; reduces AI context token use 60-90% |
 | [tldt](https://github.com/gleicon/tldt) | Extractive text summarization; no LLM, no cost |
 
 ## References

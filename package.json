@@ -1,7 +1,7 @@
 {
   "name": "devskills",
   "version": "0.1.0",
-  "description": "Installable command pack for Claude Code, OpenCode, Cursor, and VSCode. Tiger Style, project workflow, reviews, RTK, Caveman, tldt.",
+  "description": "Installable command pack for Claude Code, OpenCode, Cursor, and VSCode. Tiger Style, project workflow, reviews, Caveman, tldt.",
   "keywords": [
     "claude-code",
     "cursor",
