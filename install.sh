@@ -11,7 +11,7 @@ CODEX_COMMANDS_DIR="${CODEX_HOME_DIR}/prompts"
 log() { printf '[devskills] %s\n' "$1"; }
 warn() { printf '[devskills] WARN: %s\n' "$1" >&2; }
 
-# Shared RTK/tldt logic (depends on log/warn above and DRY_RUN below).
+# Shared tldt logic (depends on log/warn above and DRY_RUN below).
 # shellcheck source=scripts/lib/external-tools.sh
 source "${DEVSKILLS_DIR}/scripts/lib/external-tools.sh"
 # shellcheck source=scripts/lib/editors.sh
@@ -44,7 +44,7 @@ for arg in "$@"; do
       echo ""
       echo "  --lang=<profile>    Language profile to write: go|typescript|javascript|rust|python|java|zig"
       echo "  --claude-dir=PATH   Claude config dir (default: \$CLAUDE_CONFIG_DIR or \$HOME/.claude)"
-      echo "  --skip-external     Skip external tool installation (RTK, tldt)"
+      echo "  --skip-external     Skip external tool installation (tldt)"
       echo "  --skip-cursor       Skip Cursor rules install into the current project"
       echo "  --skip-vscode       Skip VSCode Copilot instructions install into the current project"
       echo "  --concise           Add a terse-response directive to AGENTS.md (with --lang)"
@@ -87,7 +87,7 @@ if [ -z "$LANG_PROFILE" ] && [ "$CONCISE" -eq 1 ]; then
 fi
 
 # Validate --lang up front, before any install side effects: a bad profile
-# should fail fast, not after RTK/tldt are already installed.
+# should fail fast, not after tldt is already installed.
 if [ -n "$LANG_PROFILE" ] && [ ! -f "${DEVSKILLS_DIR}/prompts/language/${LANG_PROFILE}.md" ]; then
   warn "No language profile for '${LANG_PROFILE}'. Available: go, typescript, javascript, rust, python, java, zig"
   exit 1
@@ -272,7 +272,7 @@ fi
 
 if [ "$SKIP_EXTERNAL" -eq 0 ]; then
   log "Installing external tools..."
-  devskills_rtk install
+  devskills_osv install
   devskills_tldt install
 else
   log "Skipping external tools (--skip-external)"
@@ -287,7 +287,7 @@ log "Done. Verify with:"
 log "  claude /ds-tiger-style-mode   — in Claude Code"
 log "  /ds-tiger-style-mode          — in Cursor or OpenCode"
 log "  /prompts:ds-tiger-style-mode  — in Codex"
-log "  rtk --version                 — RTK token proxy"
+log "  osv-scanner --version         — supply-chain vulnerability scanner"
 log "  tldt --version                — text summarizer"
 log ""
 log "Set language profile in any project:"
