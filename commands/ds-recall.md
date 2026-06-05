@@ -47,8 +47,12 @@ Stop. Do not proceed.
 ### `brain`
 
 1. Check binary (see above).
-2. Run `recall brain`. Report the cross-project patterns and recipes returned.
-3. Surface any findings directly relevant to the current session.
+2. Read the current session to decide which facets of the global brain are relevant, then dispatch only the matching content subcommands:
+   - `recall brain conversations` — when prior sessions likely solved something similar.
+   - `recall brain lessons` — when the work is debugging, gotchas, or hard-won constraints.
+   - `recall brain snippets` — when reusable code patterns would help.
+3. Surface an overview from the stats-like subcommands: `recall brain stats` and `recall brain frameworks`.
+4. Report the cross-project patterns returned and highlight anything directly relevant to the current session.
 
 ## Rules
 
