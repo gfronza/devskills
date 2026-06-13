@@ -134,6 +134,16 @@ Pragmatic testing mode: as you build normally, ensure the code that matters gets
 
 ## Quality & cleanup
 
+### `/ds-code-review` — review
+
+Single-source-of-truth audit. Hunts duplicate implementations, constant drift, parallel-agent conflicts (two agents introducing competing helpers), pattern violations (new architecture style in an otherwise consistent codebase), over-engineered abstractions with one implementation, unjustified dependencies, and AI-generated scaffolding with no behavior.
+
+- **Args:** treated as scope (files or directories). With no scope, reviews the branch diff against main.
+- **Output:** one finding per line with category prefix (`duplicate:`, `constant:`, `conflict:`, `pattern:`, `idiom:`, `abstraction:`, `dependency:`, `slop:`), anchored to `file:line`. Ends with `risk: low/medium/high`. No findings: `Looks consistent. Ship it.` Changes nothing by default; `--fix` applies the mechanical, behavior-preserving removals (dead wrappers, redundant helpers, duplicate literals) — structural consolidations stay reported.
+- **Reach for it when:** reviewing AI-generated code, before merging a branch where multiple agents may have contributed, or when a codebase feels like it has "too many ways to do X." Pairs naturally with `/ds-deslop` (inline slop removal) and `/ds-grill-me` (plan interrogation).
+
+---
+
 ### `/ds-code-quality-review` — review
 
 Extremely strict maintainability audit: abstraction quality, file sprawl (the 1k-line smell), spaghetti-condition growth. Ambitiously hunts "code judo" — restructurings that delete whole categories of complexity while preserving behavior.
@@ -188,9 +198,9 @@ Strict review of code comments under one lens — **does each comment earn its p
 
 ### `/ds-quality-gate-mode` — mode
 
-Seven-pass review pipeline for a feature branch or scoped path, **bookended by `/ds-deslop`**. Run in order; implement accepted findings between passes before proceeding.
+Eight-pass review pipeline for a feature branch or scoped path, **bookended by `/ds-deslop`**. Run in order; implement accepted findings between passes before proceeding.
 
-Pipeline: `/ds-deslop` → `/ds-test-quality-review` → `/ds-security-review` → `/ds-bug-review` → `/ds-data-review` → `/ds-code-quality-review` → `/ds-doc-quality-review` → `/ds-deslop`
+Pipeline: `/ds-deslop` → `/ds-code-review` → `/ds-test-quality-review` → `/ds-security-review` → `/ds-bug-review` → `/ds-data-review` → `/ds-code-quality-review` → `/ds-doc-quality-review` → `/ds-deslop`
 
 Deslop runs first to clean the incoming diff, then again last because the gate implements fixes between passes — that freshly-generated fix code can carry its own slop. `/ds-data-review` runs only when the change touches schema, queries, transactions, or migrations; otherwise it's skipped with a note.
 
@@ -204,7 +214,7 @@ After each pass: shows findings for that pass, asks "accept all / reject all / s
 
 ## Reviews
 
-The review commands are a **layered gate, not competing alternatives** — cheapest and narrowest first, deepest last: `/ds-deslop` (noise) → `/ds-bug-review` (correctness) → `/ds-security-review` (exploitability) → `/ds-data-review` (data correctness, when the change touches schema/queries/transactions/migrations) → the language review (idioms) → `/ds-code-quality-review` (structure). Each answers a different question, so running several on the same code isn't redundant. The full pre-PR sequence is in [recipes.md](recipes.md#a-pre-pr-quality-gate).
+The review commands are a **layered gate, not competing alternatives** — cheapest and narrowest first, deepest last: `/ds-deslop` (noise) → `/ds-code-review` (single-source-of-truth: duplicates, drift, parallel-agent conflicts) → `/ds-bug-review` (correctness) → `/ds-security-review` (exploitability) → `/ds-data-review` (data correctness, when the change touches schema/queries/transactions/migrations) → the language review (idioms) → `/ds-code-quality-review` (structure). Each answers a different question, so running several on the same code isn't redundant. The full pre-PR sequence is in [recipes.md](recipes.md#a-pre-pr-quality-gate).
 
 ### `/ds-bug-review` — review
 

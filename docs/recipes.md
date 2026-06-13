@@ -81,14 +81,15 @@ Fresh AI-generated code carries slop — narrating comments, defensive overkill 
 /ds-deslop src/handlers/
 ```
 
-`/ds-deslop` is **narrow and behavior-preserving** — it tidies style and removes noise. It is *not* a structural audit. The two compose:
+`/ds-deslop` is **narrow and behavior-preserving** — it tidies style and removes noise. It is *not* a structural audit. The three compose:
 
 ```
-/ds-deslop                  # remove the noise first
-/ds-code-quality-review     # then judge the structure that remains
+/ds-deslop                  # 1. remove noise first
+/ds-code-review             # 2. single-source-of-truth: duplicates, drift, parallel-agent conflicts
+/ds-code-quality-review     # 3. then judge the structure that remains
 ```
 
-Doing it in that order means the structural review isn't distracted by slop, and its findings are about real design, not formatting.
+`/ds-code-review` catches a distinct failure mode from the other two: it checks whether the branch introduced *another* version of something that already exists — a second HTTP client, a duplicate constant, a helper that competes with one an earlier agent added. Most common in AI-assisted codebases where multiple agents independently solve the same problem without seeing each other's work. Run it after slop removal, before structural review, so `/ds-code-quality-review` isn't auditing code that should have been deleted outright.
 
 ---
 
@@ -131,17 +132,18 @@ Stitch the quality commands into one gate you run before marking a PR ready:
 
 ```
 /ds-deslop                  # 1. remove slop introduced on the branch
-/ds-code-quality-review     # 2. structure: is the diff making the codebase worse?
-/ds-bug-review              # 3. correctness: real bugs, not style
-/ds-security-review         # 4. exploitability — if it touches input, auth, secrets, or I/O
-/ds-data-review             # 5. data correctness — if it touches schema, queries, transactions, or migrations
-/ds-test-quality-review     # 6. is the risky logic actually covered, with good tests?
-/ds-perf-plan               # 7. performance: where is it doing more work than needed? (perf-sensitive changes)
-/ds-go-review               # 8. language pass (or /ds-ts-review, /ds-rust-review)
-/ds-verify-this  <claim>    # 9. prove the headline change actually works
+/ds-code-review             # 2. single source of truth: duplicates, constant drift, parallel-agent conflicts
+/ds-code-quality-review     # 3. structure: is the diff making the codebase worse?
+/ds-bug-review              # 4. correctness: real bugs, not style
+/ds-security-review         # 5. exploitability — if it touches input, auth, secrets, or I/O
+/ds-data-review             # 6. data correctness — if it touches schema, queries, transactions, or migrations
+/ds-test-quality-review     # 7. is the risky logic actually covered, with good tests?
+/ds-perf-plan               # 8. performance: where is it doing more work than needed? (perf-sensitive changes)
+/ds-go-review               # 9. language pass (or /ds-ts-review, /ds-rust-review)
+/ds-verify-this  <claim>    # 10. prove the headline change actually works
 ```
 
-Then write the PR description from what you learned and `gh pr ready`. Each step answers a *different* question — slop (noise), structure, correctness, exploitability, data correctness, test coverage, performance, language idioms, behavior — so they don't overlap. Not every PR needs all nine: reach for `/ds-security-review` when it touches untrusted input, `/ds-data-review` when it touches schema/queries/migrations, `/ds-test-quality-review` when the logic is non-trivial, `/ds-perf-plan` when a path is hot or the change is perf-sensitive. Run the questions that apply.
+Then write the PR description from what you learned and `gh pr ready`. Each step answers a *different* question — slop (noise), single-source-of-truth, structure, correctness, exploitability, data correctness, test coverage, performance, language idioms, behavior — so they don't overlap. Not every PR needs all ten: reach for `/ds-code-review` whenever multiple agents or AI tools touched the branch; `/ds-security-review` when it touches untrusted input; `/ds-data-review` when it touches schema/queries/migrations; `/ds-test-quality-review` when the logic is non-trivial; `/ds-perf-plan` when a path is hot or the change is perf-sensitive. Run the questions that apply.
 
 ---
 
