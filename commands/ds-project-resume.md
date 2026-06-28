@@ -12,11 +12,12 @@ When invoked, read the project's persisted state and report where to pick up —
 2. If `.project/PLAN.md` does not exist, say so and suggest `/ds-project-map` then `/ds-roadmap`. Stop.
 3. Read `.project/PLAN.md` — focus on `## Now` (state, next, open questions) and the `## Roadmap` status.
 4. Read `.project/PROJECT.md` if present, for the repo map and constraints.
-5. If `.project/handoff.md` exists, check whether it is still current — by **file modification time, not git** (the workflow must work when `.project/` is git-ignored or the repo has no git):
+5. Read `.project/DECISIONS.md` if present — note how many decisions it records and surface the most recent few if they bear on the next action. Never dump the whole file; it grows over time.
+6. If `.project/handoff.md` exists, check whether it is still current — by **file modification time, not git** (the workflow must work when `.project/` is git-ignored or the repo has no git):
    - If `handoff.md` is newer than `.project/PLAN.md`, load it — it's the freshest context.
    - If it is older than `PLAN.md` (a checkpoint happened after it), treat it as **stale**: mention it exists and its date, but do not rely on it.
    - If the repo uses git, you may *optionally* also flag the handoff as stale when commits have landed since it was written — but never require git; the file-time comparison is the source of truth.
-6. Summarize: current state, the next action, open questions, the modes applied, and anything stale worth noting.
+7. Summarize: current state, the next action, open questions, recorded decisions worth recalling, the modes applied, and anything stale worth noting.
 
 ## Rules
 
