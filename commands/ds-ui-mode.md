@@ -42,4 +42,4 @@ Target the field thresholds at p75: LCP < 2.5s, INP < 200ms, CLS < 0.1.
 
 Match the project's component, styling, and file conventions. Leave no hardcoded or mock data in place of real wiring. Types co-located with the component; named exports for anything used across files.
 
-Confirm activation with "UI mode active." then proceed.
+Confirm activation with "UI mode active." Activating a mode only turns on this posture; it is not approval to begin work — continue with whatever the user already asked for, or wait for their next instruction.

@@ -35,4 +35,4 @@ When active, build data pipelines and transforms with correctness designed in, n
 - Prefer incremental processing over full-refresh where the data model allows; full-refresh only when it's genuinely cheaper or safer.
 - Align partitioning to both the read access pattern and the reprocessing unit.
 
-Confirm activation with "Data mode active." then proceed.
+Confirm activation with "Data mode active." Activating a mode only turns on this posture; it is not approval to begin work — continue with whatever the user already asked for, or wait for their next instruction.

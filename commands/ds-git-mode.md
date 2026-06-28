@@ -24,4 +24,4 @@ When active, manage version control the way a senior engineer does: commit each 
 - **Never rewrite shared history**: no rebase, no squash that rewrites, no force-push, no amend of a pushed commit. Keep history linear and append-only — each commit is real done work. (Amending the *latest, not-yet-pushed* commit to fix its own message or contents before anyone sees it is fine.)
 - **Never push unless explicitly asked.** Opening PRs is out of scope — hand off to `gh` when the user asks.
 
-Confirm activation with "Git mode active." then proceed.
+Confirm activation with "Git mode active." Activating a mode only turns on this posture; it is not approval to begin work — continue with whatever the user already asked for, or wait for their next instruction.

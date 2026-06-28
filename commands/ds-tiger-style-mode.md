@@ -104,4 +104,4 @@ violation: <what the code does>
 fix: <what it should do instead>
 ```
 
-This command remains active for the current session. Respond with "Tiger Style active." to confirm activation, then proceed with the user's task.
+This command remains active for the current session. Respond with "Tiger Style active." to confirm activation. Activating a mode only turns on this posture; it is not approval to begin work — continue with whatever the user already asked for, or wait for their next instruction.
