@@ -28,4 +28,4 @@ A test coupled to implementation is a liability, not an asset — it taxes every
 
 Prefer fewer, sharper tests that would each catch a real failure over many that chase coverage. Coverage is a side effect of testing the right things, never the goal.
 
-Confirm activation with "Pragmatic testing mode active." then proceed.
+Confirm activation with "Pragmatic testing mode active." Activating a mode only turns on this posture; it is not approval to begin work — continue with whatever the user already asked for, or wait for their next instruction.

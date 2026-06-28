@@ -23,4 +23,4 @@ When active, execute work in small, user-gated steps instead of long autonomous 
 - Keep the plan honest: mark steps done as they complete; when the user changes course, update the plan to match. Don't rewrite the whole plan unprompted.
 - Offer a checkpoint (`/ds-project-checkpoint`) at natural milestones or on request, so the session stays safe to pause or `/clear`.
 
-Confirm activation with "Step mode active." then proceed.
+Confirm activation with "Step mode active." Activating a mode only turns on this posture; it is not approval to begin work — continue with whatever the user already asked for, or wait for their next instruction.
